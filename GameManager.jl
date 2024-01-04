@@ -57,6 +57,15 @@ end
 #This fonction take a JAN and return the JAN of the new position.
 #It assume that the move is always possible
 function MakeMove(JAN, move)
-
+    piece = move[1]
+    if (move[2] == ' ')
+        removeIndex = findlast(piece, JAN)
+    else
+        removeIndex = findfirst(move[2], JAN)-1
+    end
+    newJAN = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
+    addedIndex = findfirst(move[3], newJAN)
+    newJAN = string(newJAN[1:addedIndex-1], piece, newJAN[addedIndex:end])
+    return newJAN
 end
-ShowPosition("abcdefghi0/001122334455")
+#ShowPosition("abcdefghi0/001122334455")
