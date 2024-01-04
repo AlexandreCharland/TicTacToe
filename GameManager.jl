@@ -17,7 +17,7 @@ function ShowPosition(JAN)
     letter = 98
     line = " "
     stuff = ""
-    for i in 3:findfirst('/', JAN)
+    for i in 3:(findfirst('/', JAN)-1)
         if(Char(letter) != JAN[i])
             stuff = JAN[i]
         else
@@ -33,9 +33,8 @@ function ShowPosition(JAN)
             letter += 1
         end
     end
+    line = string(line, translation[stuff])
     println(line)
-    #Char(97) = 'a'
-    #Char(48) = '0'
 end
 
 #This function take a JAN and return 0 if player 0 has won and 1 if player 1 has won.
