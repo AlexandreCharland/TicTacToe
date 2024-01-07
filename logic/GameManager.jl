@@ -19,56 +19,49 @@ translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4
 # # is the piece in play using the numerical notation
 # a is where that piece come from. If the piece come from outside of the board use " ".
 # If the piece is already place and we want to move it, then use the current position of the piece.
-# b is the box where the piece ends up.
-
-# This function take a JAN and return true the JAN is valide and false if not.
-function VerifyJAN(JAN)
-    parts = split(JAN, '/')
-        # Confirn that we have two parts
-    length(parts) == 2 || throw(ArgumentError("JAN should contain one '/'"))
-
-    leftPart, rightPart = parts[1], parts[2]
-
-    return VerifyLength(leftPart, rightPart) && CountOccurrences(leftPart, rightPart) && VerifySuperiority(leftPart)
-end
+# b is the box where the piece ends up
 
 #This function take a JAN and return the state of the board of the JAN in alphabetical notation.
 function ShowPosition(JAN)
-    letter = 97
-    line = " "
-    stuff = ""
-    for i in 1:(findfirst('i', JAN)-1)
-        if (Char(letter) != JAN[i])
-            stuff = JAN[i]
-        else
-            line = string(line, translation[stuff])
-            if (letter % 3 == 0) #only activate for c and f
-                println(line)
-                println("---+---+---")
-                line = " "
+    if (VerifyJAN(JAN))
+        letter = 97
+        line = " "
+        stuff = ""
+        for i in 1:(findfirst('i', JAN)-1)
+            if (Char(letter) != JAN[i])
+                stuff = JAN[i]
             else
-                line = string(line, " | ")
+                line = string(line, translation[stuff])
+                if (letter % 3 == 0) #only activate for c and f
+                    println(line)
+                    println("---+---+---")
+                    line = " "
+                else
+                    line = string(line, " | ")
+                end
+                stuff = ""
+                letter += 1
             end
-            stuff = ""
-            letter += 1
         end
+        line = string(line, translation[stuff])
+        println(line)
+    else
+        println("Invald JAN")
     end
-    line = string(line, translation[stuff])
-    println(line)
 end
 
 #This function take a JAN and return false if no player has won and true if a player won.
 function SomeoneWon(JAN)
-    
+    #TODO
 end
 
 #This fonction take a JAN and return a bool confirming that a move is legal or not.
 function VerifyMove(JAN, move)
-    
+    #TODO
 end
 
 #This fonction take a JAN and return the JAN of the new position.
-#It assume that the move is always possible
+#It assume that the move is always possible 1 e
 function MakeMove(JAN, move)
     piece = move[1]
     if (move[2] == ' ')

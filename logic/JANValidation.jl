@@ -5,7 +5,7 @@ function VerifyLength(leftPart::AbstractString, rightPart::AbstractString)
         return false
     else
 	    if ((length(leftPart) >= 10) && (length(rightPart) <= 12))
-            if (leftPart[end] == '0' || leftPart[end] == '1')
+            if ((leftPart[end] == '0' || leftPart[end] == '1') && isletter(leftPart[end-1]) )
                 return true
             else
                 return false
@@ -60,4 +60,15 @@ function ExtractNumbers(string::AbstractString)
     numbers = eachmatch(r"\d+", string)
     result = [ match.match for match in numbers]
     return result
+end
+
+# This function take a JAN and return true the JAN is valide and false if not.
+function VerifyJAN(JAN)
+    parts = split(JAN, '/')
+        # Confirn that we have two parts
+    length(parts) == 2 || throw(ArgumentError("JAN should contain one '/'"))
+
+    leftPart, rightPart = parts[1], parts[2]
+
+    return VerifyLength(leftPart, rightPart) && CountOccurrences(leftPart, rightPart) && VerifySuperiority(leftPart)
 end
