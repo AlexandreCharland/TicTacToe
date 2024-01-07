@@ -17,8 +17,12 @@ end
 input_string = "abc054d3e1f00g1h3i1/00134455"
 left_occurrences, right_occurrences = count_occurrences(input_string)
 
-arr = [0, 3, 4]
-zipped = zip(arr[1:2], arr[2:end])
+# Use a regular expression to find all numeric sequences in the string
+matches = eachmatch(r"\d+", input_string)
+
+# Filter out the empty strings and convert the remaining strings to an array
+result = [match.match for match in matches]
+print(length(split("a05b05c1d1e2f2g3h3i440/", "/")))
+# Print the result
 #println("Left side occurrences: ", left_occurrences)
 #println("Right side occurrences: ", right_occurrences)
-println(zipped)

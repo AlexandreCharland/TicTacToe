@@ -23,12 +23,11 @@ translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4
 
 # This function take a JAN and return true the JAN is valide and false if not.
 function VerifyJAN(JAN)
-        parts = split(JAN, '/')
-
+    parts = split(JAN, '/')
         # Confirn that we have two parts
-        length(parts) == 2 || throw(ArgumentError("JAN should contain one '/'"))
+    length(parts) == 2 || throw(ArgumentError("JAN should contain one '/'"))
 
-        leftPart, rightPart = parts[0], parts[1]
+    leftPart, rightPart = parts[1], parts[2]
 
     return VerifyLength(leftPart, rightPart) && CountOccurrences(leftPart, rightPart) && VerifySuperiority(leftPart)
 end

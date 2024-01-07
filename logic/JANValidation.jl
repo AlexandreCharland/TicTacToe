@@ -5,7 +5,7 @@ function VerifyLength(leftPart::AbstractString, rightPart::AbstractString)
         return false
     else
 	    if ((length(leftPart) >= 10) && (length(rightPart) <= 12))
-            if (leftPart[-1] == "0" || leftPart[-1] == "1")
+            if (leftPart[end] == '0' || leftPart[end] == '1')
                 return true
             else
                 return false
@@ -22,13 +22,15 @@ function CountOccurrences(leftPart1::AbstractString, rightPart::AbstractString)
     leftPart = leftPart1[1:end-1]
 
     # Count occurrences on the left side
-    leftOccurrences = Dict(c => count(x -> x == c, leftPart) for c in '0':'9')
+    leftOccurrences = Dict(c => count(x -> x == c, leftPart) for c in '0':'5')
 
     # Count occurrences on the right side
-    rightOccurrences = Dict(c => count(x -> x == c, rightPart) for c in '0':'9')
+    rightOccurrences = Dict(c => count(x -> x == c, rightPart) for c in '0':'5')
+
+    #println(leftOccurrences, rightOccurrences)
 
     # Verification
-    for c in '0':'9'
+    for c in '0':'5'
         totalOccurences = leftOccurrences[c] + rightOccurrences[c]
         if (totalOccurences != 2)
             return false
@@ -37,12 +39,17 @@ function CountOccurrences(leftPart1::AbstractString, rightPart::AbstractString)
     return true
 end
 
+# Verify if the 
 function VerifySuperiority(leftPart::AbstractString)
     string = leftPart[1:end-1]
     numbers = ExtractNumbers(string)
-    for i in 1:length(numbers)-1
-        if div(numbers[i], 2) >= div(numbers[i+1], 2)
-            return false
+    for group in numbers
+        if (length(group) >= 2)
+            for i in 1:length(group)-1
+                if div(parse(Int, group[i]), 2) >= div(parse(Int, group[i+1]), 2)
+                    return false
+                end
+            end
         end
     end
     return true
@@ -50,6 +57,7 @@ end
 
 # Take a string and return an array of the numbers contained in the string
 function ExtractNumbers(string::AbstractString)
-    numbers = matchall(r"\d+", string)
-    return parse.(Int, numbers)
+    numbers = eachmatch(r"\d+", string)
+    result = [ match.match for match in numbers]
+    return result
 end
