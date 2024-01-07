@@ -1,5 +1,5 @@
 using Test
-include("../logic/JANValidation.jl")
+include("../GameUtiliatries.jl")
 
 @testset "Test VerifyLength" begin
     @test VerifyLength("abcdefghi0", "001122334455") == true
@@ -28,4 +28,20 @@ end
     @test VerifyJAN("a0bcdefghi0/001122334455") == false
     @test VerifyJAN("a22bcde135fghi0/1223445") == false
     @test VerifyJAN("a01bcdrfghi0/0122334455") == false
+end
+
+@testset "Test GetPiecesPositions" begin
+    @test GetPiecesPositions("a05b05c1d1e24f24g3h3i0", '5') == ["5b", "5c"]
+    @test GetPiecesPositions("a05b05c1d1e24f24g3h3i0", '2') == ["2f", "2g"]
+    @test GetPiecesPositions("a05b05c1d1e24f24g3h3i0", '0') == ["0b", "0c"]
+    @test GetPiecesPositions("a024b05c1d1e24f4g3h3i0", '2') == ["2b", "2f"]
+end
+
+@testset "Test VerifyMove" begin
+    @test VerifyMove("a02bcdr135fghi0/0123445", "0 d") == true
+    @test VerifyMove("a05b05c1d1e24f24g3h3i0/", "0 d") == false
+    @test VerifyMove("a05b0c1d1e24f24g3h3i0/5", "5bd") == true
+    @test VerifyMove("a05b0c1d1e24f24g3h3i0/5", "5bf") == false
+    @test VerifyMove("a05b0c1d1e24f24g3h3i0/5", "5 a") == true
+    @test VerifyMove("a05b0c1d1e24f24g3h3i0/5", "5af") == false
 end
