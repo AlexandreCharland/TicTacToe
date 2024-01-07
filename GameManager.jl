@@ -1,3 +1,5 @@
+include("JANValidation.jl")
+
 # Numerical notation equivalence in alphabetical notation 0 = S, 1 = s, 2 = M, 3 = m, 4 = L, 5 = l
 translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
 
@@ -18,6 +20,18 @@ translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4
 # a is where that piece come from. If the piece come from outside of the board use " ".
 # If the piece is already place and we want to move it, then use the current position of the piece.
 # b is the box where the piece ends up.
+
+# This function take a JAN and return true the JAN is valide and false if not.
+function VerifyJAN(JAN)
+        parts = split(JAN, '/')
+
+        # Confirn that we have two parts
+        length(parts) == 2 || throw(ArgumentError("JAN should contain one '/'"))
+
+        leftPart, rightPart = parts[0], parts[1]
+
+    return VerifyLength(leftPart, rightPart) && CountOccurrences(leftPart, rightPart) && VerifySuperiority(leftPart)
+end
 
 #This function take a JAN and return the state of the board of the JAN in alphabetical notation.
 function ShowPosition(JAN)
