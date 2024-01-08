@@ -20,7 +20,7 @@ translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4
 # b is the box where the piece ends up
 
 # Verify the length of the JAN and the player number
-function VerifyLength(leftPart::String, rightPart::String)
+function VerifyLength(leftPart, rightPart)
     if ((length(leftPart) + length(rightPart) + 1) != 23)
         return false
     else
@@ -37,7 +37,7 @@ function VerifyLength(leftPart::String, rightPart::String)
 end
 
 # This method verify that there is exactly two occurences of the same piece.
-function CountOccurrences(leftPart1::String, rightPart::String)
+function CountOccurrences(leftPart1, rightPart)
     # Remove the player number
     leftPart = leftPart1[1:end-1]
 
@@ -60,7 +60,7 @@ function CountOccurrences(leftPart1::String, rightPart::String)
 end
 
 # Verify if the the pieces on the board respect the hierarchie
-function VerifySuperiority(leftPart::String)
+function VerifySuperiority(leftPart)
     string = leftPart[1:end-1]
     numbers = ExtractNumbers(string)
     for group in numbers
@@ -76,7 +76,7 @@ function VerifySuperiority(leftPart::String)
 end
 
 # Return true if the hierarchie of the pieces is respected
-function Superiority(piece1::Char, piece2::Char)
+function Superiority(piece1, piece2)
     if div(parse(Int, piece1), 2) < div(parse(Int, piece2), 2)
         return true
     else
@@ -85,7 +85,7 @@ function Superiority(piece1::Char, piece2::Char)
 end
 
 # Take a string and return an array of the numbers contained in the string
-function ExtractNumbers(string::String)
+function ExtractNumbers(string)
     regexPattern = r"\d+"
     numbers = eachmatch(regexPattern, string)
     result = [ match.match for match in numbers]
@@ -176,7 +176,7 @@ function VerifyMove(JAN, move)
 end
 
 #This fonction take a JAN and return the JAN of the new position.
-#It assume that the move is always possible 1 e
+#It assume that the move is always possible: 1 e
 function MakeMove(JAN, move)
     if VerifyMove(JAN, move)
         piece = move[1]
@@ -194,17 +194,152 @@ function MakeMove(JAN, move)
     end
 end
 
-# Get return the differents positions of a piece in the board
-function GetPiecesPositions(board::String, piece::Char)
+#Get return the differents positions of a piece in the board
+function GetPiecesPositions(board, piece)
     regexPattern = piece * r"(\d*?[a-zA-Z])"
     positions = eachmatch(regexPattern, board)
     result = [length(match.match) > 2 ? string(match.match[1], match.match[end]) : match.match for match in positions]
     return result
 end
 
-#This function take a JAN and return false if no player has won and true if a player won.
-function SomeoneWon(JAN)
-    #TODO
+#Separate each square on the board
+function DismantleBoard(board)
+    patts = [
+        r"(\d*)a", r"(\d*)b",
+        r"(\d*)c",r"(\d*)d",
+        r"(\d*)e",r"(\d*)f",
+        r"(\d*)g",r"(\d*)h", 
+        r"(\d*)i"
+    ]
+
+    dismantledBoard = []
+
+    for patt in patts
+        matches = eachmatch(patt, board)
+        for match in matches 
+            push!(dismantledBoard, match.match)
+        end
+    end
+
+    return dismantledBoard
+
 end
 
-# ShowPosition("abcdefghi0/001122334455")
+#Create a new board by taking the tranosposed board and by flipping
+# the left column with the right.
+#  g | d | a
+# ---+---+---
+#  h | e | b
+# ---+---+---
+#  i | f | c
+function TransposedBoard(dismantledBoard)
+    return string(dismantledBoard[1], dismantledBoard[4], dismantledBoard[7], 
+    dismantledBoard[2], dismantledBoard[5], dismantledBoard[8],
+    dismantledBoard[3], dismantledBoard[6], dismantledBoard[9])
+end
+
+#Create a board that contains only the diagonals.
+#  a |   | c
+# ---+---+---
+#    | e |  
+# ---+---+---
+#  g |   | i
+function DiagonalBoard(dismantledBoard)
+    return string(dismantledBoard[1], dismantledBoard[5], dismantledBoard[9], 
+    dismantledBoard[3], dismantledBoard[5], dismantledBoard[7])
+end
+
+#This function take a JAN and return false if no player has won and true if a player won.
+# 0 = even won, 1 = odd won, 2 = no one won or no winning pattern or invalid JAN
+function SomeoneWon(JAN)
+    if VerifyJAN(JAN)
+        board = split(JAN, "/")[1][1:end-1]
+
+        # Regex patterns
+        horizontalPatterns = [r"(\d+)a(\d+)b(\d+)c", r"(\d+)d(\d+)e(\d+)f", r"(\d+)g(\d+)h(\d+)i"]
+        verticalPatterns = [r"(\d+)a(\d+)d(\d+)g", r"(\d+)b(\d+)e(\d+)h", r"(\d+)c(\d+)f(\d+)i"]
+        diagonalPatterns = [r"(\d+)a(\d+)e(\d+)i", r"(\d+)c(\d+)e(\d+)g"]
+
+        dismantledBoard = DismantleBoard(board)
+        flippedRight = TransposedBoard(dismantledBoard)
+        diagonal = DiagonalBoard(dismantledBoard)
+    
+        winningPatternsOnBoard = []
+    
+        for patt in horizontalPatterns
+            matches = eachmatch(patt, board)
+            for match in matches 
+                push!(winningPatternsOnBoard, match.match)
+            end
+        end
+    
+        for patt in verticalPatterns
+            matches = eachmatch(patt, flippedRight)
+            for match in matches 
+                push!(winningPatternsOnBoard, match.match)
+            end
+        end
+    
+        for patt in diagonalPatterns
+            matches = eachmatch(patt, diagonal)
+            for match in matches 
+                push!(winningPatternsOnBoard, match.match)
+            end
+        end
+
+        if !isempty(winningPatternsOnBoard)
+            winningPatt = []
+            for patt in winningPatternsOnBoard 
+                str = ""
+                for i in eachindex(patt)
+                    if isletter(patt[i])
+                        str = string(str, patt[i-1], patt[i])
+                    end
+                end
+                push!(winningPatt, str)
+            end
+
+            for pattern in winningPatt
+                # Replace all the letters by "" and convert the string numbers to int
+                result = replace(pattern, r"[a-zA-Z]" => "")
+                evenNumArr = []
+                oddNumArr = []
+    
+                for elem in result
+                    if parse(Int, elem) % 2 == 0
+                        push!(evenNumArr, true)
+                        push!(oddNumArr, false)
+                    else
+                        push!(evenNumArr, false)
+                        push!(oddNumArr, true)
+                    end
+                end
+    
+                if all(evenNumArr)
+                    return "Even won"
+                elseif all(oddNumArr)
+                    return "Odd won"
+                else
+                    continue
+                end
+            end
+            return "No winner"
+        else
+            return "No pattern winner on board"
+        end
+    else
+        return "Invalid JAN"
+    end
+end
+
+# Verify if all the bool in the array are true
+function evenOrOdd(numArr)
+    for elem in numArr
+        if !elem
+            return false
+        end
+    end
+    return true
+end
+
+#ShowPosition("abcdefghi0/001122334455")
