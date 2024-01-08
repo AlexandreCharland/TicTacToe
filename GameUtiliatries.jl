@@ -252,83 +252,64 @@ end
 #This function take a JAN and return false if no player has won and true if a player won.
 # 0 = even won, 1 = odd won, 2 = no one won or no winning pattern or invalid JAN
 function SomeoneWon(JAN)
-    if VerifyJAN(JAN)
-        board = split(JAN, "/")[1][1:end-1]
+    board = split(JAN, "/")[1][1:end-1]
 
-        # Regex patterns
-        horizontalPatterns = [r"(\d+)a(\d+)b(\d+)c", r"(\d+)d(\d+)e(\d+)f", r"(\d+)g(\d+)h(\d+)i"]
-        verticalPatterns = [r"(\d+)a(\d+)d(\d+)g", r"(\d+)b(\d+)e(\d+)h", r"(\d+)c(\d+)f(\d+)i"]
-        diagonalPatterns = [r"(\d+)a(\d+)e(\d+)i", r"(\d+)c(\d+)e(\d+)g"]
+    # Regex patterns
+    horizontalPatterns = [r"(\d+)a(\d+)b(\d+)c", r"(\d+)d(\d+)e(\d+)f", r"(\d+)g(\d+)h(\d+)i"]
+    verticalPatterns = [r"(\d+)a(\d+)d(\d+)g", r"(\d+)b(\d+)e(\d+)h", r"(\d+)c(\d+)f(\d+)i"]
+    diagonalPatterns = [r"(\d+)a(\d+)e(\d+)i", r"(\d+)c(\d+)e(\d+)g"]
 
-        dismantledBoard = DismantleBoard(board)
-        flippedRight = TransposedBoard(dismantledBoard)
-        diagonal = DiagonalBoard(dismantledBoard)
-    
-        winningPatternsOnBoard = []
-    
-        for patt in horizontalPatterns
-            matches = eachmatch(patt, board)
-            for match in matches 
-                push!(winningPatternsOnBoard, match.match)
-            end
+    dismantledBoard = DismantleBoard(board)
+    flippedRight = TransposedBoard(dismantledBoard)
+    diagonal = DiagonalBoard(dismantledBoard)
+
+    winningPatternsOnBoard = []
+
+    for patt in horizontalPatterns
+        matches = eachmatch(patt, board)
+        for match in matches 
+            push!(winningPatternsOnBoard, match.match)
         end
-    
-        for patt in verticalPatterns
-            matches = eachmatch(patt, flippedRight)
-            for match in matches 
-                push!(winningPatternsOnBoard, match.match)
-            end
-        end
-    
-        for patt in diagonalPatterns
-            matches = eachmatch(patt, diagonal)
-            for match in matches 
-                push!(winningPatternsOnBoard, match.match)
-            end
-        end
+    end
 
-        if !isempty(winningPatternsOnBoard)
-            winningPatt = []
-            for patt in winningPatternsOnBoard 
-                str = ""
-                for i in eachindex(patt)
-                    if isletter(patt[i])
-                        str = string(str, patt[i-1], patt[i])
-                    end
-                end
-                push!(winningPatt, str)
-            end
+    for patt in verticalPatterns
+        matches = eachmatch(patt, flippedRight)
+        for match in matches 
+            push!(winningPatternsOnBoard, match.match)
+        end
+    end
 
-            for pattern in winningPatt
-                # Replace all the letters by "" and convert the string numbers to int
-                result = replace(pattern, r"[a-zA-Z]" => "")
-                evenNumArr = []
-                oddNumArr = []
-    
-                for elem in result
-                    if parse(Int, elem) % 2 == 0
-                        push!(evenNumArr, true)
-                        push!(oddNumArr, false)
-                    else
-                        push!(evenNumArr, false)
-                        push!(oddNumArr, true)
-                    end
-                end
-    
-                if all(evenNumArr)
-                    return "Even won"
-                elseif all(oddNumArr)
-                    return "Odd won"
-                else
-                    continue
+    for patt in diagonalPatterns
+        matches = eachmatch(patt, diagonal)
+        for match in matches 
+            push!(winningPatternsOnBoard, match.match)
+        end
+    end
+
+    if !isempty(winningPatternsOnBoard)
+        winningPatt = []
+        for patt in winningPatternsOnBoard
+            str = ""
+            for i in eachindex(patt)
+                if isletter(patt[i])
+                    str = string(str, patt[i-1], patt[i])
                 end
             end
-            return "No winner"
-        else
-            return "No pattern winner on board"
+            push!(winningPatt, str)
         end
+
+        for pattern in winningPatt
+            # Replace all the letters by "" and convert the string numbers to int
+            result = replace(pattern, r"[a-zA-Z]" => "")
+            sum = 0
+            for str in result
+                sum = sum + Int(str) % 2
+            end
+            return sum % 3 == 0
+        end
+        return false
     else
-        return "Invalid JAN"
+        return false
     end
 end
 
@@ -340,6 +321,10 @@ function evenOrOdd(numArr)
         end
     end
     return true
+end
+
+function PossibleMoves(JAN)
+
 end
 
 #ShowPosition("abcdefghi0/001122334455")

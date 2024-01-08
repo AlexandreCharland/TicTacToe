@@ -48,16 +48,15 @@ end
 
 @testset "Test SomeoneWon" begin
     # Horizontal win 
-    @test SomeoneWon("1a03b025cdefghi0/123445") == "Odd won"
-    @test SomeoneWon("abc2d14e2fghi1/00133455") == "Even won"
-    @test SomeoneWon("abcdef25g03h1i1/0123445") == "Odd won"
+    @test SomeoneWon("1a03b025cdefghi0/123445") == true
+    @test SomeoneWon("abc2d14e2fghi1/00133455") == true
+    @test SomeoneWon("abcdef25g03h1i1/0123445") == true
     
     # Vertical win
-    @test SomeoneWon("0abc2def04ghi0/11233455") == "Even won"
-    @test SomeoneWon("a1bcd03efg05h4i0/122345") == "Odd won"
-    @test SomeoneWon("ab0cde0fgh14i1/12233455") == "Even won"
+    @test SomeoneWon("0abc2def04ghi0/11233455") == true
+    @test SomeoneWon("a1bcd03efg05h4i0/122345") == true
+    @test SomeoneWon("ab0cde0fgh14i1/12233455") == true
 
-    # Diagonal win
-    @test SomeoneWon("0abcd2efgh04i0/11233455") == "Even won"
-    @test SomeoneWon("ab1cd3ef5ghi0/001223445") == "Odd won"
+    @test SomeoneWon("0abcd2efgh04i0/11233455") == true
+    @test SomeoneWon("ab1cd3ef5ghi0/001223445") == true
 end
