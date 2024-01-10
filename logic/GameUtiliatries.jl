@@ -105,31 +105,27 @@ end
 
 #This function take a JAN and return the state of the board of the JAN in alphabetical notation.
 function ShowPosition(JAN)
-    if (VerifyJAN(JAN))
-        letter = 97
-        line = " "
-        stuff = ""
-        for i in 1:(findfirst('i', JAN)-1)
-            if (Char(letter) != JAN[i])
-                stuff = JAN[i]
+    letter = 97
+    line = " "
+    stuff = ""
+    for i in 1:(findfirst('i', JAN)-1)
+        if (Char(letter) != JAN[i])
+            stuff = JAN[i]
+        else
+            line = string(line, translation[stuff])
+            if (letter % 3 == 0) #only activate for c and f
+                println(line)
+                println("---+---+---")
+                line = " "
             else
-                line = string(line, translation[stuff])
-                if (letter % 3 == 0) #only activate for c and f
-                    println(line)
-                    println("---+---+---")
-                    line = " "
-                else
-                    line = string(line, " | ")
-                end
-                stuff = ""
-                letter += 1
+                line = string(line, " | ")
             end
+            stuff = ""
+            letter += 1
         end
-        line = string(line, translation[stuff])
-        println(line)
-    else
-        println("Invald JAN")
     end
+    line = string(line, translation[stuff])
+    println(line)
 end
 
 #This fonction take a JAN and return a bool confirming that a move is legal or not.
@@ -178,20 +174,16 @@ end
 #This fonction take a JAN and return the JAN of the new position.
 #It assume that the move is always possible: 1 e
 function MakeMove(JAN, move)
-    if VerifyMove(JAN, move)
-        piece = move[1]
-        if (move[2] == ' ')
-            removeIndex = findlast(piece, JAN)
-        else
-            removeIndex = findfirst(move[2], JAN)-1
-        end
-        newJAN = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
-        addedIndex = findfirst(move[3], newJAN)
-        newJAN = string(newJAN[1:addedIndex-1], piece, newJAN[addedIndex:end])
-        return newJAN
+    piece = move[1]
+    if (move[2] == ' ')
+        removeIndex = findlast(piece, JAN)
     else
-        return JAN
+        removeIndex = findfirst(move[2], JAN)-1
     end
+    newJAN = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
+    addedIndex = findfirst(move[3], newJAN)
+    newJAN = string(newJAN[1:addedIndex-1], piece, newJAN[addedIndex:end])
+    return newJAN
 end
 
 #Get return the differents positions of a piece in the board
