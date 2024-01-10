@@ -323,8 +323,41 @@ function evenOrOdd(numArr)
     return true
 end
 
+#TODO
+#Return the possible move for the player.
 function PossibleMoves(JAN)
+    preBoard = split(JAN, "/")[1]
+    player = preBoard[end]
+    board = preBoard[1:end-1]
+    println(player)
+    if player ==  '0'
+        dms1 = GetPiecesPositions(board, "0")
+        dms2 = GetPiecesPositions(board, "2")
+        dms3 = GetPiecesPositions(board, "4")
+        dms = vcat(dms1, dms2, dms3)
+    else
+        dms1 = GetPiecesPositions(board, "1")
+        dms2 = GetPiecesPositions(board, "3")
+        dms3 = GetPiecesPositions(board, "5")
+        dms = vcat(dms1, dms2, dms3)
+    end
+    println(dms)
+    return TestMoves(dms, JAN)
+end
 
+function TestMoves(dms, JAN)
+    validMoves = []
+    alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+    for i in eachindex(dms)
+        for j in alphabet
+            fullMove = string(dms[i], j)
+            if VerifyMove(JAN, fullMove)
+                println(fullMove)
+                push!(fullMove, validMoves)
+            end
+        end
+    end
+    return validMoves
 end
 
 #ShowPosition("abcdefghi0/001122334455")
