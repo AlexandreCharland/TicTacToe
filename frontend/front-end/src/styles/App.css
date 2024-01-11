@@ -87,3 +87,61 @@ body {
 .game-info {
   margin-left: 20px;
 }
+
+.deck {
+  display: flex;
+  flex-direction: row;
+  padding: 10%;
+}
+
+/* Common style for both X and O */
+.piece::after {
+  content: '';
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* Style for X */
+.piece-x-0::after {
+  content: 'X';
+  font-size: 25px;
+  color: rgb(0, 48, 138);
+  z-index: 1; /* Higher z-index to superimpose on smaller shapes */
+}
+
+.piece-x-1::after {
+  content: 'X';
+  font-size: 50px;
+  color: rgba(0, 48, 138, 0.773);
+  z-index: 1;
+}
+
+.piece-x-2::after {
+  content: 'X';
+  font-size: 75px;
+  color: rgba(0, 48, 138, 0.493);
+  z-index: 1;
+}
+
+/* Style for O */
+.piece-o-0::after {
+  content: 'O';
+  font-size: 25px;
+  color: rgb(240, 49, 49);
+  z-index: 1;
+}
+
+.piece-o-1::after {
+  content: 'O';
+  font-size: 50px;
+  color: rgba(240, 49, 49, 0.709);
+  z-index: 1;
+}
+
+.piece-o-2::after {
+  content: 'O';
+  font-size: 75px;
+  color: rgba(240, 49, 49, 0.398);
+  z-index: 1;
+}
