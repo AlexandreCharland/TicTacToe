@@ -13,6 +13,8 @@ function Square({ value, onSquareClick }) {
 function Board({ xIsNext, squares, onPlay }) {
 
   const [selcetedPiece, setSelectedPiece] = useState();
+  const [availableXpiece, updateXpiece] = useState(["S", "S", "M", "M", "L", "L"])
+  const [availableOpiece, updateOpiece] = useState(["s", "s", "m", "m", "l", "l"])
 
   function handleClick(i) {
     if (calculateWinner(squares) || squares[i]) {
@@ -44,18 +46,24 @@ function Board({ xIsNext, squares, onPlay }) {
         <div className='modal-background'>
           <div className='modal-content'>
             <div className='deck'>
-              <div className='piece-x-0' onClick={() => {
-                setSelectedPiece(<div className='piece-x-0' />);
+              {
+                availableXpiece.forEach((piece) => {
+                  return <div onClick={() => {
+                    setSelectedPiece(piece);
+                    updateXpiece(availableXpiece.filter((p) => p !== piece));
+                    setChoice(false);
+                  }}>{piece}</div>
+                })
+              }
+
+              <div onClick={() => {
+                setSelectedPiece("M");
                 setChoice(false);
-              }} />
-              <div className='piece-x-1' onClick={() => {
-                setSelectedPiece(<div className='piece-x-1' />);
+              }}>M</div>
+              <div onClick={() => {
+                setSelectedPiece("L");
                 setChoice(false);
-              }} />
-              <div className='piece-x-2' onClick={() => {
-                setSelectedPiece(<div className='piece-x-2' />);
-                setChoice(false);
-              }} />
+              }}>L</div>
             </div>
           </div>
         </div>
