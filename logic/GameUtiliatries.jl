@@ -130,44 +130,44 @@ end
 
 #This fonction take a JAN and return a bool confirming that a move is legal or not.
 function VerifyMove(JAN, move)
-    if VerifyJAN(JAN)
-        splittedJAN = split(JAN, "/")
-        board, deck = splittedJAN[1][1:end-1], splittedJAN[2]
-        piece, from, to = move[1], move[2], move[3]
-        toIndex = findfirst(to, board)
-        targetOnBoard = toIndex > 1 && toIndex <= length(board) ? board[toIndex-1] : 'z'
-        
-        # Piece from the deck ?
-        if from == ' '
-            # Confirm that the piece is on the deck
-            if occursin(piece, deck)
-                #If there a pice that is already on this part of the board
-                if isdigit(targetOnBoard)
-                    return Superiority(targetOnBoard, piece)
-                else
-                    return true # Nothing on this section of the board
-                end
+    splittedJAN = split(JAN, "/")
+    board, deck = splittedJAN[1][1:end-1], splittedJAN[2]
+    piece, from, to = move[1], move[2], move[3]
+    toIndex = findfirst(to, board)
+    targetOnBoard = toIndex > 1 && toIndex <= length(board) ? board[toIndex-1] : 'z'
+
+    
+    
+    # Piece from the deck ?
+    if from == ' '
+        # Confirm that the piece is on the deck
+        if occursin(piece, deck)
+            #If there a pice that is already on this part of the board
+            if isdigit(targetOnBoard)
+                return Superiority(targetOnBoard, piece)
             else
-                return false # The piece is not in the deck
+                return true # Nothing on this section of the board
             end
         else
-            positions = GetPiecesPositions(board, piece)
-            # Confirm that the piece is on the board
-            if !isempty(positions)
-                for elem in positions
-                    if (elem == string(piece, from))
-                        if isdigit(targetOnBoard)
-                            return Superiority(targetOnBoard, piece)
-                        end
-                    end
-                end
-                return false
-            else
-                return false # Piece doesn't exist
-            end
+            return false # The piece is not in the deck
         end
     else
-        return false
+        positions = GetPiecesPositions(board, piece)
+        # Confirm that the piece is on the board
+        if !isempty(positions)
+            for elem in positions
+                if (elem == string(piece, from))
+                    if isdigit(targetOnBoard)
+                        return Superiority(targetOnBoard, piece)
+                    else
+                        return true
+                    end
+                end
+            end
+            return false
+        else
+            return false # Piece doesn't exist
+        end
     end
 end
 
@@ -315,13 +315,11 @@ function evenOrOdd(numArr)
     return true
 end
 
-#TODO
 #Return the possible move for the player.
 function PossibleMoves(JAN)
     preBoard = split(JAN, "/")[1]
     player = preBoard[end]
     board = preBoard[1:end-1]
-    println(player)
     if player ==  '0'
         dms1 = GetPiecesPositions(board, "0")
         dms2 = GetPiecesPositions(board, "2")
@@ -334,7 +332,9 @@ function PossibleMoves(JAN)
         dms = vcat(dms1, dms2, dms3)
     end
     println(dms)
-    return TestMoves(dms, JAN)
+    #dms = demi-moves
+    result = TestMoves(dms, JAN)
+    return result
 end
 
 function TestMoves(dms, JAN)
@@ -344,8 +344,7 @@ function TestMoves(dms, JAN)
         for j in alphabet
             fullMove = string(dms[i], j)
             if VerifyMove(JAN, fullMove)
-                println(fullMove)
-                push!(fullMove, validMoves)
+                push!(validMoves, fullMove)
             end
         end
     end
