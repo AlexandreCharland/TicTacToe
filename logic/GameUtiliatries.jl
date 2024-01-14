@@ -369,3 +369,7 @@ end
 function winAtThisligne(a,b,c)
     return (a%2+b%2+c%2)%3 
 end
+
+function Test()
+    return "Hello world"
+end
