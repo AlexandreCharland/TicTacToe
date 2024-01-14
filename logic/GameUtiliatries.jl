@@ -352,3 +352,20 @@ function TestMoves(dms, JAN)
 end
 
 #ShowPosition("abcdefghi0/001122334455")
+
+function lastNumberOnly(DismantledBoard)
+    numberDismantledBoard = [] 
+    for numberLetter in DismantledBoard
+        if length(numberLetter) > 1
+            push!(numberDismantledBoard, parse(Int, numberLetter[end-1]))
+        else
+            push!(numberDismantledBoard, 9)
+        end
+    end
+    
+    return numberDismantledBoard  
+end
+
+function winAtThisligne(a,b,c)
+    return (a%2+b%2+c%2)%3 
+end
