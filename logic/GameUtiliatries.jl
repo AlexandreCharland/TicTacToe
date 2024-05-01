@@ -411,7 +411,7 @@ function TestMoves(dms, JAN)
     return validMoves
 end #Verification needed
 
-ShowPosition("05a34bc2d14e3f1g5h02i1/")
-newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
-ShowPosition(newPos)
+#ShowPosition("05a34bc2d14e3f1g5h02i1/")
+#newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
+#ShowPosition(newPos)
 #YouWinningSon("05a34bc2d14e3f1g5h02i1/")
