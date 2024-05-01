@@ -21,20 +21,16 @@ translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4
 
 # Verify the length of the JAN and the player number
 function VerifyLength(leftPart, rightPart)
-    if ((length(leftPart) + length(rightPart) + 1) != 23)
+    if (length(leftPart) + length(rightPart) != 22)
         return false
     else
 	    if ((length(leftPart) >= 10) && (length(rightPart) <= 12))
-            if ((leftPart[end] == '0' || leftPart[end] == '1') && isletter(leftPart[end-1]) )
-                return true
-            else
-                return false
-            end
+            return (leftPart[end] == '0' || leftPart[end] == '1') && isletter(leftPart[end-1])
 	    else
 	        return false
 	    end
     end
-end
+end #Verification needed
 
 # This method verify that there is exactly two occurences of the same piece.
 function CountOccurrences(leftPart1, rightPart)
@@ -57,7 +53,7 @@ function CountOccurrences(leftPart1, rightPart)
         end
     end
     return true
-end
+end #Verification needed
 
 # Verify if the the pieces on the board respect the hierarchie
 function VerifySuperiority(leftPart)
@@ -73,16 +69,12 @@ function VerifySuperiority(leftPart)
         end
     end
     return true
-end
+end #Verification needed
 
 # Return true if the hierarchie of the pieces is respected
 function Superiority(piece1, piece2)
-    if div(parse(Int, piece1), 2) < div(parse(Int, piece2), 2)
-        return true
-    else
-        return false
-    end
-end
+    return div(parse(Int, piece1), 2) < div(parse(Int, piece2), 2)
+end #Verification needed
 
 # Take a string and return an array of the numbers contained in the string
 function ExtractNumbers(string)
@@ -90,7 +82,7 @@ function ExtractNumbers(string)
     numbers = eachmatch(regexPattern, string)
     result = [ match.match for match in numbers]
     return result
-end
+end #Verification needed
 
 # This function take a JAN and return true the JAN is valide and false if not.
 function VerifyJAN(JAN)
@@ -101,7 +93,7 @@ function VerifyJAN(JAN)
     leftPart, rightPart = parts[1], parts[2]
 
     return VerifyLength(leftPart, rightPart) && CountOccurrences(leftPart, rightPart) && VerifySuperiority(leftPart)
-end
+end #Verification needed
 
 #This function take a JAN and return the state of the board of the JAN in alphabetical notation.
 function ShowPosition(JAN)
@@ -124,26 +116,25 @@ function ShowPosition(JAN)
             letter += 1
         end
     end
-    line = string(line, translation[stuff])
+    line = string(line, translation[stuff], "\n")
     println(line)
-end
+end 
 
 #This fonction take a JAN and return a bool confirming that a move is legal or not.
 function VerifyMove(JAN, move)
     if VerifyJAN(JAN)
         splittedJAN = split(JAN, "/")
         board, deck = splittedJAN[1][1:end-1], splittedJAN[2]
-        piece, from, to = move[1], move[2], move[3]
-        toIndex = findfirst(to, board)
+        toIndex = findfirst(move[3], board)
         targetOnBoard = toIndex > 1 && toIndex <= length(board) ? board[toIndex-1] : 'z'
         
         # Piece from the deck ?
-        if from == ' '
+        if move[2] == ' '
             # Confirm that the piece is on the deck
-            if occursin(piece, deck)
+            if occursin(move[1], deck)
                 #If there a pice that is already on this part of the board
                 if isdigit(targetOnBoard)
-                    return Superiority(targetOnBoard, piece)
+                    return Superiority(targetOnBoard, move[1])
                 else
                     return true # Nothing on this section of the board
                 end
@@ -151,13 +142,13 @@ function VerifyMove(JAN, move)
                 return false # The piece is not in the deck
             end
         else
-            positions = GetPiecesPositions(board, piece)
+            positions = GetPiecesPositions(board, move[1])
             # Confirm that the piece is on the board
             if !isempty(positions)
                 for elem in positions
-                    if (elem == string(piece, from))
+                    if (elem == string(move[1], move[2]))
                         if isdigit(targetOnBoard)
-                            return Superiority(targetOnBoard, piece)
+                            return Superiority(targetOnBoard, move[1])
                         end
                     end
                 end
@@ -169,7 +160,7 @@ function VerifyMove(JAN, move)
     else
         return false
     end
-end
+end #Why is it there?
 
 #This fonction take a JAN and return the JAN of the new position.
 #It assume that the move is always possible: 1 e
@@ -183,6 +174,8 @@ function MakeMove(JAN, move)
     newJAN = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
     addedIndex = findfirst(move[3], newJAN)
     newJAN = string(newJAN[1:addedIndex-1], piece, newJAN[addedIndex:end])
+    playerTurn = findlast('/', newJAN)
+    newJAN = string(newJAN[1:playerTurn-2], Char(97-Int(newJAN[playerTurn-1])), newJAN[playerTurn:end])
     return newJAN
 end
 
@@ -192,7 +185,7 @@ function GetPiecesPositions(board, piece)
     positions = eachmatch(regexPattern, board)
     result = [length(match.match) > 2 ? string(match.match[1], match.match[end]) : match.match for match in positions]
     return result
-end
+end #Verification needed
 
 #Separate each square on the board
 function DismantleBoard(board)
@@ -215,7 +208,7 @@ function DismantleBoard(board)
 
     return dismantledBoard
 
-end
+end #Verification needed
 
 #Create a new board by taking the tranosposed board and by flipping
 # the left column with the right.
@@ -228,7 +221,7 @@ function TransposedBoard(dismantledBoard)
     return string(dismantledBoard[1], dismantledBoard[4], dismantledBoard[7], 
     dismantledBoard[2], dismantledBoard[5], dismantledBoard[8],
     dismantledBoard[3], dismantledBoard[6], dismantledBoard[9])
-end
+end #Verification needed
 
 #Create a board that contains only the diagonals.
 #  a |   | c
@@ -239,7 +232,7 @@ end
 function DiagonalBoard(dismantledBoard)
     return string(dismantledBoard[1], dismantledBoard[5], dismantledBoard[9], 
     dismantledBoard[3], dismantledBoard[5], dismantledBoard[7])
-end
+end #Verification needed
 
 #This function take a JAN and return false if no player has won and true if a player won.
 # 0 = even won, 1 = odd won, 2 = no one won or no winning pattern or invalid JAN
@@ -303,7 +296,73 @@ function SomeoneWon(JAN)
     else
         return false
     end
+end #Verification needed
+
+function VerifyWin(a, b, c)
+    A = 48 - Int(a[end-1])
+    B = 48 - Int(b[end-1])
+    C = 48 - Int(c[end-1])
+    return (A%2+B%2+C%2)%3
 end
+
+function CheckDiaE(dismantledBoard)
+    diagonalDetected = false
+    for i in 1:5
+        if (lenght(dismantledBoard[i]) != 1 && length(dismantledBoard[10-i]) != 1)
+            diagonalDetected = diagonalDetected || VerifyWin(dismantledBoard[i], dismantledBoard[5], dismantledBoard[10-i])
+        end
+    end
+    return diagonalDetected
+end #Verification needed
+
+function CheckDiaA(dismantledBoard)
+    if (length(dismantledBoard[7]) != 1 && length(dismantledBoard[4]) != 1)
+        if (length(dismantledBoard[2]) != 1 && length(dismantledBoard[3]) != 1)
+            return (VerifyWin(dismantledBoard[1], dismantledBoard[4], dismantledBoard[7]) == 0) || (VerifyWin(dismantledBoard[1], dismantledBoard[2], dismantledBoard[3]) == 0)
+        else
+            return VerifyWin(dismantledBoard[1], dismantledBoard[4], dismantledBoard[7]) == 0
+        end
+    else
+        if (length(dismantledBoard[2]) != 1 && length(dismantledBoard[3]) != 1)
+            return VerifyWin(dismantledBoard[1], dismantledBoard[2], dismantledBoard[3]) == 0
+        else
+            return false
+        end
+    end
+end #Verification needed
+
+function CheckDiaI(dismantledBoard)
+    if (length(dismantledBoard[3]) != 1 && length(dismantledBoard[6]) != 1)
+        if (length(dismantledBoard[7] != 1) && length(dismantledBoard[8] != 1))
+            return (VerifyWin(dismantledBoard[3], dismantledBoard[6], dismantledBoard[9]) == 0) || (VerifyWin(dismantledBoard[7], dismantledBoard[8], dismantledBoard[9]) == 0)
+        else
+            return VerifyWin(dismantledBoard[3], dismantledBoard[8], dismantledBoard[9]) == 0
+        end
+    else
+        if (length(dismantledBoard[7]) != 1 && length(dismantledBoard[8]) != 1)
+            return VerifyWin(dismantledBoard[7], dismantledBoard[8], dismantledBoard[9]) == 0
+        else
+            return false
+        end
+    end
+end #Verification needed
+
+function YouWinningSon(JAN)
+    board = split(JAN, "/")[1][1:end-1]
+    dismantledBoard = DismantleBoard(board)
+    winningDected = false
+    if (length(dismantledBoard[5]) != 1)
+        if (CheckDiaE(dismantledBoard))
+            return true
+        end
+    end
+    if (length(dismantledBoard[9]) != 1)
+        if (CheckDiaI(dismantledBoard))
+            return true
+        end
+    end
+    return length(dismantledBoard[1]) != 1 && CheckDiaA(dismantledBoard)
+end #Verification needed
 
 # Verify if all the bool in the array are true
 function evenOrOdd(numArr)
@@ -313,7 +372,7 @@ function evenOrOdd(numArr)
         end
     end
     return true
-end
+end #Verification needed
 
 #TODO
 #Return the possible move for the player.
@@ -335,7 +394,7 @@ function PossibleMoves(JAN)
     end
     println(dms)
     return TestMoves(dms, JAN)
-end
+end #Verification needed
 
 function TestMoves(dms, JAN)
     validMoves = []
@@ -350,6 +409,9 @@ function TestMoves(dms, JAN)
         end
     end
     return validMoves
-end
+end #Verification needed
 
-#ShowPosition("abcdefghi0/001122334455")
+ShowPosition("05a34bc2d14e3f1g5h02i1/")
+newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
+ShowPosition(newPos)
+#YouWinningSon("05a34bc2d14e3f1g5h02i1/")
