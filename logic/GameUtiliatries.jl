@@ -1,5 +1,4 @@
 # Numerical notation equivalence in alphabetical notation 0 = S, 1 = s, 2 = M, 3 = m, 4 = L, 5 = l
-translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
 
 # JAN  a b c d e f g h i#/
 # # = 0 if it is player 0's move and # = 1 if it is player 1's move
@@ -21,6 +20,7 @@ translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4
 
 #This function take a JAN and return the state of the board of the JAN in alphabetical notation.
 function ShowPosition(JAN)
+    translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
     letter = 97
     line = " "
     stuff = ""
