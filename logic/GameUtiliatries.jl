@@ -46,29 +46,31 @@ end
 
 #This fonction take a JAN and return the JAN of the new position.
 #It assume that the move is always possible: 1 e
-function MakeMove(JAN, move)
-    piece = move[1]
+function MakeMove(JAN::String, move::String)
     if (move[2] == ' ')
-        removeIndex = findlast(piece, JAN)
+        removeIndex::Int16 = findlast(move[1], JAN)
     else
         removeIndex = findfirst(move[2], JAN)-1
     end
-    newJAN = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
-    addedIndex = findfirst(move[3], newJAN)
-    newJAN = string(newJAN[1:addedIndex-1], piece, newJAN[addedIndex:end])
-    playerTurn = findlast('/', newJAN)
+    newJAN::String = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
+    addedIndex::Int16 = findfirst(move[3], newJAN)
+    newJAN = string(newJAN[1:addedIndex-1], move[1], newJAN[addedIndex:end])
+    playerTurn::Int16 = findlast('/', newJAN)
     newJAN = string(newJAN[1:playerTurn-2], Char(97-Int(newJAN[playerTurn-1])), newJAN[playerTurn:end])
     return newJAN
 end
 
 function VerifyWin(a, b, c)
-    A = 48 - Int(a[end-1])
-    B = 48 - Int(b[end-1])
-    C = 48 - Int(c[end-1])
-    return (A%2+B%2+C%2)%3
+    return (Int(a[end-1])%2+Int(b[end-1])%2+Int(c[end-1])%2)%3
 end
 
-#ShowPosition("05a34bc2d14e3f1g5h02i1/")
-#newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
-#ShowPosition(newPos)
+function SomeonWon(JAN)
+    
+    #Trouve ce que contient les cases
+    #Essait tous
+end
+
+ShowPosition("05a34bc2d14e3f1g5h02i1/")
+newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
+ShowPosition(newPos)
 #YouWinningSon("05a34bc2d14e3f1g5h02i1/")
