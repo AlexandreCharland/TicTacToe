@@ -19,13 +19,17 @@ using StaticArrays
 # If the piece is already place and we want to move it, then use the current position of the piece.
 # b is the box where the piece ends up
 
+#This project uses MVector instead of String to represent the moves and the JAN. Since every JAN is the
+#same size, fixing the memory space will dramaticly improve the performace. To transform a MVector
+#into a String use prod(MVector)
+
 #This function take a JAN and return the state of the board of the JAN in alphabetical notation.
-function ShowPosition(JAN)
+function ShowPosition(JAN) #No need to optimise
     translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
     letter = 97
     line = " "
     stuff = ""
-    for i in 1:(findfirst('i', JAN)-1)
+    for i in 1:(findfirst(JAN.=='i')-1)
         if (Char(letter) != JAN[i])
             stuff = JAN[i]
         else
@@ -47,33 +51,51 @@ end
 
 #This function take a JAN and return the JAN of the new position.
 #It assume that the move is always possible
-function MakeMove(JAN::String, move::String)
-    if (move[2] == ' ')
-        removeIndex::Int16 = findlast(move[1], JAN)
+function MakeMove(JAN::MVector, move::MVector)
+    changeTurn = Dict('0' => '1', '1' => '0')
+    to::Int8 = findfirst(JAN.==move[3])
+    playerTurn::Int8 = findlast(JAN.=='/')-1
+    newJAN::MVector = copy(JAN)
+    if (move[2] == ' ') #to turn from
+        from::Int8 = findlast(JAN.==move[1])
+        newJAN[to] = move[1]
+        for i in (to+1):from
+            newJAN[i] = JAN[i-1]
+        end
+        newJAN[playerTurn+1] = changeTurn[JAN[playerTurn]]
     else
-        removeIndex = findfirst(move[2], JAN)-1
+        from = findfirst(JAN.==move[2])-1
+        if (from < to) #from to turn
+            for i in from:(to-1)
+                newJAN[i] = JAN[i+1]
+            end
+            newJAN[to-1] = move[1]
+            newJAN[playerTurn] = changeTurn[JAN[playerTurn]]
+        else #to from turn
+            newJAN[to] = move[1]
+            for i  in (to+1):from
+                newJAN[i] = JAN[i-1]
+            end
+            newJAN[from] = move[3]
+            newJAN[playerTurn] = changeTurn[JAN[playerTurn]]
+        end
     end
-    newJAN::String = string(JAN[1:removeIndex-1], JAN[removeIndex+1:end])
-    addedIndex::Int16 = findfirst(move[3], newJAN)
-    newJAN = string(newJAN[1:addedIndex-1], move[1], newJAN[addedIndex:end])
-    playerTurn::Int16 = findlast('/', newJAN)
-    newJAN = string(newJAN[1:playerTurn-2], Char(97-Int(newJAN[playerTurn-1])), newJAN[playerTurn:end])
     return newJAN
 end
 
 #This function take 3 non empty square and return True if every element in those square are of the same
 #parity
-function VerifyWin(a, b, c)
-    return (Int(a[end-1])%2+Int(b[end-1])%2+Int(c[end-1])%2)%3 == 0
+function VerifyWin(a::Int8, b::Int8, c::Int8)
+    return (a%2+b%2+c%2)%3 == 0
 end
 
 #This function take a JAN and return a string the the leading element in each square
-function WhatInTheBox(JAN)
+function WhatInTheBox(JAN::MVector)
     myString = MVector{9,Char}(' ',' ',' ',' ',' ',' ',' ',' ',' ')
-    elem = " "
-    j = 1
-    letter = 97
-    for i in 1:(findfirst('i', JAN))
+    elem::Char = ' '
+    j::Int8 = 1
+    letter::Int8 = 97
+    for i in 1:(findfirst('i', prod(JAN)))
         if (Char(letter) == JAN[i])
             myString[j] = elem
             elem = ' '
@@ -91,6 +113,17 @@ function SomeoneWon(JAN)
     #Essait tous
 end
 
-#ShowPosition("05a34bc2d14e3f1g5h02i1/")
-#newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
-#ShowPosition(newPos)
+a = MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
+ShowPosition(a)
+b = MakeMove(a, MVector{3,Char}('0',' ','e'))
+ShowPosition(b)
+c = MakeMove(b, MVector{3,Char}('3',' ','a'))
+ShowPosition(c)
+d = MakeMove(c, MVector{3,Char}('0',' ','c'))
+ShowPosition(d)
+e = MakeMove(d, MVector{3,Char}('5',' ','e'))
+ShowPosition(e)
+f = MakeMove(e, MVector{3,Char}('4',' ','a'))
+ShowPosition(f)
+h = MakeMove(f, MVector{3,Char}('5',' ','b'))
+ShowPosition(h)
