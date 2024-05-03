@@ -1,3 +1,4 @@
+using StaticArrays
 # Numerical notation equivalence in alphabetical notation 0 = S, 1 = s, 2 = M, 3 = m, 4 = L, 5 = l
 
 # JAN  a b c d e f g h i#/
@@ -44,8 +45,8 @@ function ShowPosition(JAN)
     println(line)
 end
 
-#This fonction take a JAN and return the JAN of the new position.
-#It assume that the move is always possible: 1 e
+#This function take a JAN and return the JAN of the new position.
+#It assume that the move is always possible
 function MakeMove(JAN::String, move::String)
     if (move[2] == ' ')
         removeIndex::Int16 = findlast(move[1], JAN)
@@ -60,17 +61,36 @@ function MakeMove(JAN::String, move::String)
     return newJAN
 end
 
+#This function take 3 non empty square and return True if every element in those square are of the same
+#parity
 function VerifyWin(a, b, c)
-    return (Int(a[end-1])%2+Int(b[end-1])%2+Int(c[end-1])%2)%3
+    return (Int(a[end-1])%2+Int(b[end-1])%2+Int(c[end-1])%2)%3 == 0
 end
 
-function SomeonWon(JAN)
-    
-    #Trouve ce que contient les cases
+#This function take a JAN and return a string the the leading element in each square
+function WhatInTheBox(JAN)
+    myString = MVector{9,Char}(' ',' ',' ',' ',' ',' ',' ',' ',' ')
+    elem = " "
+    j = 1
+    letter = 97
+    for i in 1:(findfirst('i', JAN))
+        if (Char(letter) == JAN[i])
+            myString[j] = elem
+            elem = ' '
+            letter += 1
+            j += 1
+        else
+            elem = JAN[i]
+        end
+    end
+    return myString
+end
+
+function SomeoneWon(JAN)
+    board = WhatInTheBox(JAN)
     #Essait tous
 end
 
-ShowPosition("05a34bc2d14e3f1g5h02i1/")
-newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
-ShowPosition(newPos)
-#YouWinningSon("05a34bc2d14e3f1g5h02i1/")
+#ShowPosition("05a34bc2d14e3f1g5h02i1/")
+#newPos = MakeMove("05a34bc2d14e3f1g5h02i1/", "5hg")
+#ShowPosition(newPos)
