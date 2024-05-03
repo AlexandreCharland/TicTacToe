@@ -11,7 +11,8 @@ using StaticArrays
 # Whatever is in the spot a gets recorded behind a in numerical notation.
 # Nothing mean there isn't anything in the box.
 # After the / is the not yet played piece in order of numerical notation
-# This is the JAN of the starting position : "abcdefghi0/001122334455"
+# This is the JAN of the starting position :
+#MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
 
 # A move will be denoted as the following #ab
 # # is the piece in play using the numerical notation
@@ -85,8 +86,9 @@ end
 
 #This function take 3 non empty square and return True if every element in those square are of the same
 #parity
-function VerifyWin(a::Int8, b::Int8, c::Int8)
-    return (a%2+b%2+c%2)%3 == 0
+function VerifyWin(a::Char, b::Char, c::Char)
+    conversion = Dict('0' => 0, '1' => 2, '2' => 0, '3' => 2, '4' => 0, '5' => 2, ' ' => 1)
+    return (conversion[a]+conversion[b]+conversion[c])%6 == 0
 end
 
 #This function take a JAN and return a string the the leading element in each square
@@ -110,20 +112,12 @@ end
 
 function SomeoneWon(JAN)
     board = WhatInTheBox(JAN)
-    #Essait tous
+    return (VerifyWin(board[1], board[2], board[3]) || 
+            VerifyWin(board[1], board[4], board[7]) ||
+            VerifyWin(board[1], board[5], board[9]) ||
+            VerifyWin(board[2], board[5], board[8]) ||
+            VerifyWin(board[3], board[5], board[7]) ||
+            VerifyWin(board[3], board[6], board[9]) ||
+            VerifyWin(board[4], board[5], board[6]) ||
+            VerifyWin(board[7], board[8], board[9]))
 end
-
-a = MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
-ShowPosition(a)
-b = MakeMove(a, MVector{3,Char}('0',' ','e'))
-ShowPosition(b)
-c = MakeMove(b, MVector{3,Char}('3',' ','a'))
-ShowPosition(c)
-d = MakeMove(c, MVector{3,Char}('0',' ','c'))
-ShowPosition(d)
-e = MakeMove(d, MVector{3,Char}('5',' ','e'))
-ShowPosition(e)
-f = MakeMove(e, MVector{3,Char}('4',' ','a'))
-ShowPosition(f)
-h = MakeMove(f, MVector{3,Char}('5',' ','b'))
-ShowPosition(h)
