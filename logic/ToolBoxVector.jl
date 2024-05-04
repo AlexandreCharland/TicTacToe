@@ -110,8 +110,9 @@ function WhatInTheBox(JAN::MVector)
     return myString
 end
 
-function SomeoneWon(JAN)
-    board = WhatInTheBox(JAN)
+#This fonction takes a JAN and return true if a player has won and false if no player has won
+function SomeoneWon(JAN::MVector)
+    board::MVector = WhatInTheBox(JAN)
     return (VerifyWin(board[1], board[2], board[3]) || 
             VerifyWin(board[1], board[4], board[7]) ||
             VerifyWin(board[1], board[5], board[9]) ||
@@ -121,3 +122,26 @@ function SomeoneWon(JAN)
             VerifyWin(board[4], board[5], board[6]) ||
             VerifyWin(board[7], board[8], board[9]))
 end
+
+#This function takes a JAN and a square where a modification happen. It checks if the change square 
+#modifie the state of the game
+function SomethingHasChange(JAN::MVector, square::Char)
+    val::Int8 = Int(square)-96
+    board::MVector = WhatInTheBox(JAN)
+    if (val%2 == 0)
+        return (VerifyWin(board[7-(val%4)*2], board[val], board[5-4*(-1)^(val÷5)]) ||
+                VerifyWin(board[val], board[5], board[10-val]))
+    elseif (val == 5)
+        return (VerifyWin(board[1], board[5], board[9]) ||
+                VerifyWin(board[2], board[5], board[8]) ||
+                VerifyWin(board[3], board[5], board[7]) ||
+                VerifyWin(board[4], board[5], board[6]))
+    else
+        var::Int8 = (-1)^(val÷5)
+        return (VerifyWin(board[val], board[5-3*var], board[val+4*(val%3)-2]) ||
+                VerifyWin(board[val], board[(val%6)+3], board[val+6*var]) ||
+                VerifyWin(board[val], board[5], board[10-val]))
+    end
+end
+
+a=MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
