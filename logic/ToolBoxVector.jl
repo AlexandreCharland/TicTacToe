@@ -110,9 +110,8 @@ function WhatInTheBox(JAN::MVector)
     return myString
 end
 
-#This fonction takes a JAN and return true if a player has won and false if no player has won
-function SomeoneWon(JAN::MVector)
-    board::MVector = WhatInTheBox(JAN)
+#This fonction takes a board and return true if a player has won and false if no player has won
+function SomeoneWon(board::MVector)
     return (VerifyWin(board[1], board[2], board[3]) || 
             VerifyWin(board[1], board[4], board[7]) ||
             VerifyWin(board[1], board[5], board[9]) ||
@@ -123,11 +122,10 @@ function SomeoneWon(JAN::MVector)
             VerifyWin(board[7], board[8], board[9]))
 end
 
-#This function takes a JAN and a square where a modification happen. It checks if the change square 
+#This function takes a board and a square where a modification happen. It checks if the change square 
 #modifie the state of the game
-function SomethingHasChange(JAN::MVector, square::Char)
+function SomethingHasChange(board::MVector, square::Char)
     val::Int8 = Int(square)-96
-    board::MVector = WhatInTheBox(JAN)
     if (val%2 == 0)
         return (VerifyWin(board[7-(val%4)*2], board[val], board[5-4*(-1)^(val÷5)]) ||
                 VerifyWin(board[val], board[5], board[10-val]))
@@ -144,4 +142,53 @@ function SomethingHasChange(JAN::MVector, square::Char)
     end
 end
 
-a=MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
+@time function GenerateMove(JAN::MVector, board::MVector)
+    slashIndex::Int8 = findlast(JAN.=='/')
+    turn::Int8 = Int(JAN[slashIndex-1])%2
+    location::MMatrix = MMatrix{6,1}(fill('x', 6, 1))
+    for i in 1:9
+        piece::Int8 = Int(board[i])
+        if (piece != 32 && piece % 2 == turn)
+            piece = piece - turn - 47 #Reusing variable, a better name would be index
+            if (location[piece] == 'x')
+                location[piece] = Char(96+i)
+            else
+                location[piece + 1] = Char(96+i)
+            end
+        end
+    end
+    for i in (slashIndex+1):23
+        piece = Int(JAN[i])
+        if (piece % 2 == turn)
+            piece = piece - turn - 47
+            if (location[piece] == 'x')
+                location[piece] = ' '
+            elseif (location[piece] != ' ')
+                location[piece + 1] = ' '
+            end
+        end
+    end
+    for i in 1:9
+        val = Int(board[i])>>1
+        if (val == 16) #case vide
+            j::Int8 = 1
+        else
+            j = 2*val-45
+        end
+        while (j <= 6)
+            if (location[j] != 'x')
+                move = MVector{3,Char}(Char(((j-1)>>1<<1)+turn+48),location[j],Char(i+96))
+                #Ajout de move à une liste
+                j = location[j] == ' ' ? j + (j%2) + 1 : j+1
+            else
+                j = j+1
+            end
+        end
+    end
+    return nothing #retourne la liste
+end
+
+a=MVector{23,Char}('0','5','a','3','4','b','c','2','d','4','e','3','f','1','g','5','h','0','2','i','1','/','1')
+ShowPosition(a)
+b=WhatInTheBox(a)
+GenerateMove(a,b)
