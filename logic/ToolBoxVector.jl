@@ -77,7 +77,6 @@ function MakeMove(JAN::MVector, move::MVector)
             for i  in (to+1):from
                 newJAN[i] = JAN[i-1]
             end
-            newJAN[from] = move[3]
             newJAN[playerTurn] = changeTurn[JAN[playerTurn]]
         end
     end
