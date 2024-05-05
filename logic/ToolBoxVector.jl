@@ -12,7 +12,7 @@ using StaticArrays
 # Nothing mean there isn't anything in the box.
 # After the / is the not yet played piece in order of numerical notation
 # This is the JAN of the starting position :
-#MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
+# MVector{23,Char}('a','b','c','d','e','f','g','h','i','0','/','0','0','1','1','2','2','3','3','4','4','5','5')
 
 # A move will be denoted as the following #ab
 # # is the piece in play using the numerical notation
@@ -20,12 +20,12 @@ using StaticArrays
 # If the piece is already place and we want to move it, then use the current position of the piece.
 # b is the box where the piece ends up
 
-#This project uses MVector instead of String to represent the moves and the JAN. Since every JAN is the
-#same size, fixing the memory space will dramaticly improve the performace. To transform a MVector
-#into a String use prod(MVector)
+# This project uses MVector instead of String to represent the moves and the JAN. Since every JAN is the
+# same size, fixing the memory space will dramaticly improve the performace. To transform a MVector
+# into a String use prod(MVector)
 
-#This function take a JAN and return the state of the board of the JAN in alphabetical notation.
-function ShowPosition(JAN) #No need to optimise
+# This function take a JAN and return the state of the board of the JAN in alphabetical notation.
+function ShowPosition(JAN) # No need to optimise
     translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
     letter = 97
     line = " "
@@ -35,7 +35,7 @@ function ShowPosition(JAN) #No need to optimise
             stuff = JAN[i]
         else
             line = string(line, translation[stuff])
-            if (letter % 3 == 0) #only activate for c and f
+            if (letter % 3 == 0) # only activate for c and f
                 println(line)
                 println("---+---+---")
                 line = " "
@@ -50,14 +50,14 @@ function ShowPosition(JAN) #No need to optimise
     println(line)
 end
 
-#This function take a JAN and return the JAN of the new position.
-#It assume that the move is always possible
+# This function take a JAN and return the JAN of the new position.
+# It assume that the move is always possible
 function MakeMove(JAN::MVector, move::MVector)
     changeTurn = Dict('0' => '1', '1' => '0')
     to::Int8 = findfirst(JAN.==move[3])
     playerTurn::Int8 = findlast(JAN.=='/')-1
     newJAN::MVector = copy(JAN)
-    if (move[2] == ' ') #to turn from
+    if (move[2] == ' ') # to turn from
         from::Int8 = findlast(JAN.==move[1])
         newJAN[to] = move[1]
         for i in (to+1):from
@@ -66,13 +66,13 @@ function MakeMove(JAN::MVector, move::MVector)
         newJAN[playerTurn+1] = changeTurn[JAN[playerTurn]]
     else
         from = findfirst(JAN.==move[2])-1
-        if (from < to) #from to turn
+        if (from < to) # from to turn
             for i in from:(to-1)
                 newJAN[i] = JAN[i+1]
             end
             newJAN[to-1] = move[1]
             newJAN[playerTurn] = changeTurn[JAN[playerTurn]]
-        else #to from turn
+        else # to from turn
             newJAN[to] = move[1]
             for i  in (to+1):from
                 newJAN[i] = JAN[i-1]
@@ -84,14 +84,14 @@ function MakeMove(JAN::MVector, move::MVector)
     return newJAN
 end
 
-#This function take 3 non empty square and return True if every element in those square are of the same
-#parity
+# This function take 3 non empty square and return True if every element in those square are of the same
+# parity
 function VerifyWin(a::Char, b::Char, c::Char)
     conversion = Dict('0' => 0, '1' => 2, '2' => 0, '3' => 2, '4' => 0, '5' => 2, ' ' => 1)
     return (conversion[a]+conversion[b]+conversion[c])%6 == 0
 end
 
-#This function take a JAN and return a string the the leading element in each square
+# This function take a JAN and return a string the the leading element in each square
 function WhatInTheBox(JAN::MVector)
     myString = MVector{9,Char}(' ',' ',' ',' ',' ',' ',' ',' ',' ')
     elem::Char = ' '
@@ -110,7 +110,7 @@ function WhatInTheBox(JAN::MVector)
     return myString
 end
 
-#This fonction takes a board and return true if a player has won and false if no player has won
+# This fonction takes a board and return true if a player has won and false if no player has won
 function SomeoneWon(board::MVector)
     return (VerifyWin(board[1], board[2], board[3]) || 
             VerifyWin(board[1], board[4], board[7]) ||
@@ -122,8 +122,8 @@ function SomeoneWon(board::MVector)
             VerifyWin(board[7], board[8], board[9]))
 end
 
-#This function takes a board and a square where a modification happen. It checks if the change square 
-#modifie the state of the game
+# This function takes a board and a square where a modification happen. It checks if the change square 
+# modifie the state of the game
 function SomethingHasChange(board::MVector, square::Char)
     val::Int8 = Int(square)-96
     if (val%2 == 0)
@@ -142,14 +142,15 @@ function SomethingHasChange(board::MVector, square::Char)
     end
 end
 
-@time function GenerateMove(JAN::MVector, board::MVector)
+# This function takes a JAN and a board and return a list of every playable move.
+function GenerateMove(JAN::MVector, board::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
     turn::Int8 = Int(JAN[slashIndex-1])%2
     location::MMatrix = MMatrix{6,1}(fill('x', 6, 1))
     for i in 1:9
         piece::Int8 = Int(board[i])
         if (piece != 32 && piece % 2 == turn)
-            piece = piece - turn - 47 #Reusing variable, a better name would be index
+            piece = piece - turn - 47 # Reusing variable, a better name would be index
             if (location[piece] == 'x')
                 location[piece] = Char(96+i)
             else
@@ -168,9 +169,10 @@ end
             end
         end
     end
+    moveList = []
     for i in 1:9
         val = Int(board[i])>>1
-        if (val == 16) #case vide
+        if (val == 16) # Empty square
             j::Int8 = 1
         else
             j = 2*val-45
@@ -178,17 +180,12 @@ end
         while (j <= 6)
             if (location[j] != 'x')
                 move = MVector{3,Char}(Char(((j-1)>>1<<1)+turn+48),location[j],Char(i+96))
-                #Ajout de move à une liste
+                push!(moveList, move)
                 j = location[j] == ' ' ? j + (j%2) + 1 : j+1
             else
                 j = j+1
             end
         end
     end
-    return nothing #retourne la liste
+    return moveList
 end
-
-a=MVector{23,Char}('0','5','a','3','4','b','c','2','d','4','e','3','f','1','g','5','h','0','2','i','1','/','1')
-ShowPosition(a)
-b=WhatInTheBox(a)
-GenerateMove(a,b)
