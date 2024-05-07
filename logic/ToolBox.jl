@@ -86,6 +86,26 @@ function MakeMove(JAN::MVector, move::MVector)
     return newJAN
 end
 
+# This function takes a JAN, board and a move. It will output the new state of the board.
+function ChangeBoard(JAN::MVector, board::MVector, move::MVector)
+    newBoard = copy(board)
+    if (move[2] != ' ')
+        index::Int8 = findfirst(JAN.==move[2])-1
+        if (index == 1)
+            newBoard[1] = ' '
+        else
+            index2::Int8 = Int(move[2])-96
+            if (JAN[index-1] < JAN[index])
+                newBoard[index2] = JAN[index-1]
+            else
+                newBoard[index2] = ' '
+            end
+        end
+    end
+    newBoard[Int(move[3])-96] = move[1]
+    return newBoard
+end
+
 # This function take 3 non empty square and return True if every element in those square are of the same
 # parity
 function VerifyWin(a::Char, b::Char, c::Char)
@@ -261,5 +281,3 @@ function GenerateBetterMove(JAN::MVector, board::MVector)
     location::MVector = WherePlayablePiece(JAN, board, slashIndex, turn)
     return GenerateMove(board, location, turn)
 end
-
-
