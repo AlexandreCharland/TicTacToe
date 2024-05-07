@@ -20,6 +20,9 @@ using StaticArrays
 # If the piece is already place and we want to move it, then use the current position of the piece.
 # b is the box where the piece ends up
 
+# A piece is consider pin if moving it reveal a tictactoe. Note moving the piece and then blocking the
+# tictactoe still count as a win for the oponent
+
 # This project uses MVector instead of String to represent the moves and the JAN. Since every JAN is the
 # same size, fixing the memory space will dramaticly improve the performace. To transform a MVector
 # into a String use prod(MVector)
@@ -141,11 +144,28 @@ function SomethingHasChange(board::MVector, square::Char)
     end
 end
 
-# This function takes a JAN and a board and return a list of every playable move.
-function GenerateMove(JAN::MVector, board::MVector)
-    slashIndex::Int8 = findlast(JAN.=='/')
-    turn::Int8 = Int(JAN[slashIndex-1])%2
-    location::MMatrix = MMatrix{6,1}(fill('x', 6, 1))
+# This function take a JAN, an index of were the board start and finish, who's turn is it and the
+# location of the piece. It will return a modifie location to also contain the location of the piece on
+# the deck.
+function WhoIsOnTheBench(JAN::MVector, slashIndex::Int8, turn::Int8, location::MVector)
+    for i in (slashIndex+1):23
+        piece::Int8 = Int(JAN[i])
+        if (piece % 2 == turn)
+            piece = piece - turn - 47
+            if (location[piece] == 'x')
+                location[piece] = ' '
+            elseif (location[piece] != ' ')
+                location[piece + 1] = ' '
+            end
+        end
+    end
+    return location
+end
+
+# This function takes a JAN, board, index of the slash, and who's turn it is. It will return the location
+# of every piece that can be move
+function WhereEveryPiece(JAN::MVector, board::MVector, slashIndex::Int8, turn::Int8)
+    location::MVector = MVector{6,Char}('x','x','x','x','x','x')
     for i in 1:9
         piece::Int8 = Int(board[i])
         if (piece != 32 && piece % 2 == turn)
@@ -157,17 +177,54 @@ function GenerateMove(JAN::MVector, board::MVector)
             end
         end
     end
-    for i in (slashIndex+1):23
-        piece = Int(JAN[i])
-        if (piece % 2 == turn)
-            piece = piece - turn - 47
-            if (location[piece] == 'x')
-                location[piece] = ' '
-            elseif (location[piece] != ' ')
-                location[piece + 1] = ' '
+    return WhoIsOnTheBench(JAN, slashIndex, turn, location)
+end
+
+# This function takes a JAN, board, index of the slash, and who's turn it is. It will return the location
+# of every piece that can be move and isn't pin.
+function WherePlayablePiece(JAN::MVector, board::MVector, slashIndex, turn)
+    letter::Int8 = 97
+    location::MVector = MVector{6,Char}('x','x','x','x','x','x')
+    if (JAN[1] == 'a')
+        letter = letter + 1
+        if (JAN[2] == 'b')
+            letter = letter + 1
+        end
+    else
+        if (JAN[2] == 'a')
+            letter = letter + 1
+            piece = Int(JAN[1])
+            if (piece % 2 == turn)
+                location[piece - turn - 47] = 'a'
             end
         end
     end
+    for i in 3:(slashIndex - 2)
+        if (JAN[i] == Char(letter))
+            piece = Int(JAN[i-1])
+            if (piece % 2 == turn && JAN[i-1] < Char(letter-1))
+                info = Char(letter)
+                if (JAN[i-2] < JAN[i-1])
+                    board[letter-96] = JAN[i-2]
+                    info = SomethingHasChange(board, info) ? 'x' : info
+                    board[letter-96] = JAN[i-1]
+                end
+                piece = piece - turn - 47
+                if (location[piece] == 'x')
+                    location[piece] = info
+                else
+                    location[piece + 1] = info
+                end
+            end
+            letter = letter + 1
+        end
+    end
+    return WhoIsOnTheBench(JAN, slashIndex, turn, location)
+end
+
+# This function takes a JAN and a board and return a list of every possible given by what is in the
+# location
+function GenerateMove(board::MVector, location, turn)
     moveList = []
     for i in 1:9
         val = Int(board[i])>>1
@@ -188,3 +245,21 @@ function GenerateMove(JAN::MVector, board::MVector)
     end
     return moveList
 end
+
+# This function takes a JAN and board and generate every move possible
+function GenerateEveryMove(JAN::MVector, board::MVector)
+    slashIndex::Int8 = findlast(JAN.=='/')
+    turn::Int8 = Int(JAN[slashIndex-1])%2
+    location::MVector = WhereEveryPiece(JAN, board, slashIndex, turn)
+    return GenerateMove(board, location, turn)
+end
+
+# This function is very similar to GenerateMove, but it will not return move that moves a pin piece.
+function GenerateBetterMove(JAN::MVector, board::MVector)
+    slashIndex::Int8 = findlast(JAN.=='/')
+    turn::Int8 = Int(JAN[slashIndex-1])%2
+    location::MVector = WherePlayablePiece(JAN, board, slashIndex, turn)
+    return GenerateMove(board, location, turn)
+end
+
+

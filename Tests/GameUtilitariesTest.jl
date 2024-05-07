@@ -1,5 +1,5 @@
-using Test
-include("../logic/ToolBoxVector.jl")
+using Test #NOT WORKING
+include("../logic/ToolBox.jl")
 
 @testset "Test MakeMove" begin
     @test prod(MakeMove(MVector{23,Char}('0','5','a','3','4','b','c','2','d','1','4','e','3','f','1','g','5','h','0','2','i','1','/'), MVector{3,Char}('5','h','g'))) == "05a34bc2d14e3f15gh02i0/"
