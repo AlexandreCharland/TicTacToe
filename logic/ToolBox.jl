@@ -266,6 +266,33 @@ function GenerateMove(board::MVector, location, turn)
     return moveList
 end
 
+# This function is very similar to GenerateMove. It return the moves that add a piece on the board first.
+function GenerateOrderMove(board::MVector, location, turn)
+    moveListDeck = []
+    moveListBoard = []
+    for i in 1:9
+        val = Int(board[i])>>1
+        if (val == 16) # Empty square
+            j::Int8 = 1
+        else
+            j = 2*val-45
+        end
+        while (j <= 6)
+            if (location[j] != 'x')
+                move = MVector{3,Char}(Char(((j-1)>>1<<1)+turn+48),location[j],Char(i+96))
+                if (location[j] == ' ')
+                    push!(moveListDeck, move)
+                    j = j + (j%2)
+                else
+                    push!(moveListBoard, move)
+                end
+            end
+            j = j+1
+        end
+    end
+    return vcat(moveListDeck, moveListBoard)
+end
+
 # This function takes a JAN and board and generate every move possible
 function GenerateEveryMove(JAN::MVector, board::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
@@ -279,5 +306,5 @@ function GenerateBetterMove(JAN::MVector, board::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
     turn::Int8 = Int(JAN[slashIndex-1])%2
     location::MVector = WherePlayablePiece(JAN, board, slashIndex, turn)
-    return GenerateMove(board, location, turn)
+    return GenerateOrderMove(board, location, turn)
 end
