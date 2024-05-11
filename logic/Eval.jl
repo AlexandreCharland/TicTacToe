@@ -11,13 +11,16 @@ function X(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
         if (isempty(moveList))
             return -1, [prevMove]
         else
-            positionValue = -2
+            positionValue = 1
             bestSequence = []
             for move in moveList
                 val, sequence = O(MakeMove(JAN, move), ChangeBoard(JAN, board, move), move, depth-1)
-                if (val == 1)
-                    return val, vcat([prevMove], sequence)
-                elseif (val > positionValue)
+                if (val >= 1)
+                    return (val+1), vcat([prevMove], sequence)
+                elseif (val == 0)
+                    bestSequence = vcat([prevMove], sequence)
+                    positionValue = val
+                elseif (val < positionValue && positionValue !=0)
                     bestSequence = vcat([prevMove], sequence)
                     positionValue = val
                 end
@@ -37,13 +40,16 @@ function O(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
         if (isempty(moveList))
             return 1, [prevMove]
         else
-            positionValue = 2
+            positionValue = -1
             bestSequence = []
             for move in moveList
                 val, sequence = X(MakeMove(JAN, move), ChangeBoard(JAN, board, move), move, depth-1)
-                if (val == -1)
-                    return val, vcat([prevMove], sequence)
-                elseif (val < positionValue)
+                if (val <= -1)
+                    return (val-1), vcat([prevMove], sequence)
+                elseif (val == 0)
+                    bestSequence = vcat([prevMove], sequence)
+                    positionValue = val
+                elseif (val > positionValue && positionValue !=0)
                     bestSequence = vcat([prevMove], sequence)
                     positionValue = val
                 end
@@ -53,14 +59,16 @@ function O(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
     end
 end
 
+# Determine if a player has a force win in the position and the best continuation it has found
 function eval(JAN::MVector, board::MVector, depth::Int64)
     turn = findlast(JAN.=='/')-1
     playerTurn = Int(JAN[turn])%2
     if (playerTurn == 1)
-        return O(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
+        val, list = O(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
     else
-        return X(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
+        val, list = X(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
     end
+    return val, list[2:end]
 end
 
 #Testing...
@@ -73,5 +81,6 @@ end
 #a=MVector{23,Char}('1','3','5','a','1','5','b','c','0','2','4','d','e','f','0','2','4','g','h','i','0','/','3')
 #a=MVector{23,Char}('3','4','a','5','b','0','3','4','c','1','d','0','5','e','f','g','2','h','i','0','/','1','2')
 #a=MVector{23,Char}('3','4','a','5','b','0','c','d','0','5','e','f','g','h','i','0','/','1','1','2','2','3','4')
+#a=MVector{23,Char}('3','4','a','5','b','0','c','d','0','5','e','f','g','2','h','i','1','/','1','1','2','3','4')
 #a=MVector{23,Char}('0','3','a','b','c','1','4','d','1','2','e','f','0','3','g','h','i','1','/','2','4','5','5')
 #print(eval(a,WhatInTheBox(a), 7))
