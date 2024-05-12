@@ -59,7 +59,7 @@ function O(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
     end
 end
 
-# Determine if the evaluation of the position
+# Determine the evaluation of the position
 function eval(JAN::MVector, board::MVector, depth::Int64)
     turn = findlast(JAN.=='/')-1
     playerTurn = Int(JAN[turn])%2
