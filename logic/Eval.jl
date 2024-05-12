@@ -59,7 +59,7 @@ function O(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
     end
 end
 
-# Determine if a player has a force win in the position and the best continuation it has found
+# Determine if the evaluation of the position
 function eval(JAN::MVector, board::MVector, depth::Int64)
     turn = findlast(JAN.=='/')-1
     playerTurn = Int(JAN[turn])%2
@@ -68,19 +68,37 @@ function eval(JAN::MVector, board::MVector, depth::Int64)
     else
         val, list = X(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
     end
-    return val, list[2:end]
+    if (val != 0)
+        val = div(abs(val),val)
+    end
+    return val
 end
 
-#Testing...
-#a=MVector{23,Char}('0','3','a','b','c','1','4','d','1','2','4','e','5','f','0','3','g','h','i','1','/','2','5')
-#a=MVector{23,Char}('0','3','a','5','b','c','1','4','d','1','2','4','e','5','f','0','3','g','h','i','0','/','2')
-#a=MVector{23,Char}('3','4','a','b','3','4','c','5','d','1','2','e','1','2','f','g','h','0','5','i','1','/','0')
-#a=MVector{23,Char}('0','4','a','2','5','b','3','c','1','3','4','d','2','5','e','1','f','g','h','i','0','/','0')
-#a=MVector{23,Char}('a','1','b','3','c','d','2','5','e','2','5','f','g','1','3','4','h','0','4','i','0','/','0')
-#a=MVector{23,Char}('0','5','a','3','4','b','c','2','d','1','4','e','3','f','1','g','5','h','0','2','i','1','/')
-#a=MVector{23,Char}('1','3','5','a','1','5','b','c','0','2','4','d','e','f','0','2','4','g','h','i','0','/','3')
-#a=MVector{23,Char}('3','4','a','5','b','0','3','4','c','1','d','0','5','e','f','g','2','h','i','0','/','1','2')
-#a=MVector{23,Char}('3','4','a','5','b','0','c','d','0','5','e','f','g','h','i','0','/','1','1','2','2','3','4')
-#a=MVector{23,Char}('3','4','a','5','b','0','c','d','0','5','e','f','g','2','h','i','1','/','1','1','2','3','4')
-#a=MVector{23,Char}('0','3','a','b','c','1','4','d','1','2','e','f','0','3','g','h','i','1','/','2','4','5','5')
-#print(eval(a,WhatInTheBox(a), 7))
+
+# Determine the best move in the position
+function FindBestMove(JAN::MVector, board::MVector, depth::Int64)
+    turn = findlast(JAN.=='/')-1
+    playerTurn = Int(JAN[turn])%2
+    bestVal = nothing
+    bestList = []
+    if (playerTurn == 1)
+        val, list = O(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
+        bestList = list
+        bestVal = val
+        while (abs(val) > 2)
+            bestList = list
+            bestVal = val
+            val, list = O(JAN, board, MVector{3,Char}(' ',' ',' '), abs(val)-1)
+        end
+    else
+        val, list = X(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
+        bestList = list
+        bestVal = val
+        while (abs(val) > 2)
+            bestList = list
+            bestVal = val
+            val, list = X(JAN, board, MVector{3,Char}(' ',' ',' '), abs(val)-1)
+        end
+    end
+    return bestVal, bestList[2:end]
+end
