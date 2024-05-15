@@ -351,9 +351,3 @@ function ShouldNOTPlayedThat(JAN, board, move) # No need to optimise
     end
     return SomeoneWon(board)
 end
-
-
-#a=MVector{23,Char}('1','2','5','a','3','4','b','2','c','d','1','4','e','f','g','3','h','0','5','i','1','/','0')
-#b=WhatInTheBox(a)
-#c=MVector{3,Char}('5','i','g')
-#print(ShouldNOTPlayedThat(a,b,c))
