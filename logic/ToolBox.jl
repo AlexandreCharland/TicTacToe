@@ -37,9 +37,18 @@ function transformString(s)
     return newVec
 end
 
-# This function take a JAN and return the state of the board of the JAN in alphabetical notation.
-function ShowPosition(JAN) # No need to optimise
-    translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
+# This function take a JAN and return the state of the board of the JAN
+function ShowPosition(JAN)
+    ShowPosition(JAN, 2)
+end
+
+# This function take a JAN and a choice for the pieces and and return the state of the board of the JAN
+function ShowPosition(JAN, choice) # No need to optimise
+    pieceSet1 = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
+    pieceSet2 = Dict("" => " ", '0' => "x", '1' => "o", '2' => "+", '3' => "0", '4' => "X", '5' => "O")
+    pieceSet3 = Dict("" => " ", '0' => "0", '1' => "1", '2' => "2", '3' => "3", '4' => "4", '5' => "5")
+    pieceSet = [pieceSet1, pieceSet2, pieceSet3]
+    translation = pieceSet[choice]
     letter = 97
     line = " "
     stuff = ""
