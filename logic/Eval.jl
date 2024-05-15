@@ -20,7 +20,7 @@ function X(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
                 elseif (val == 0)
                     bestSequence = vcat([prevMove], sequence)
                     positionValue = val
-                elseif (val < positionValue && positionValue !=0)
+                elseif (val < positionValue && positionValue != 0)
                     bestSequence = vcat([prevMove], sequence)
                     positionValue = val
                 end
@@ -49,7 +49,7 @@ function O(JAN::MVector, board::MVector, prevMove::MVector, depth::Int64)
                 elseif (val == 0)
                     bestSequence = vcat([prevMove], sequence)
                     positionValue = val
-                elseif (val > positionValue && positionValue !=0)
+                elseif (val > positionValue && positionValue != 0)
                     bestSequence = vcat([prevMove], sequence)
                     positionValue = val
                 end

@@ -28,7 +28,7 @@ using StaticArrays
 # into a String use prod(MVector)
 
 # This function takes a String and transform it into a MVector
-function transformString(s)
+function transformString(s) # No need to optimise
     len = length(s)
     newVec = MVector{len,Char}(undef)
     for i in 1:len
@@ -315,10 +315,9 @@ function GenerateOrderMove(board::MVector, location, turn)
 end
 
 # This function takes a JAN and board and generate every move possible
-function GenerateEveryMove(JAN::MVector)
+function GenerateEveryMove(JAN::MVector, board::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
     turn::Int8 = Int(JAN[slashIndex-1])%2
-    board = WhatInTheBox(JAN)
     location::MVector = WhereEveryPiece(JAN, board, slashIndex, turn)
     return GenerateMove(board, location, turn)
 end
@@ -330,3 +329,31 @@ function GenerateBetterMove(JAN::MVector, board::MVector)
     location::MVector = WherePlayablePiece(JAN, board, slashIndex, turn)
     return GenerateOrderMove(board, location, turn)
 end
+
+# This function check if a move insta lose
+function ShouldNOTPlayedThat(JAN, board, move) # No need to optimise
+    slashIndex::Int8 = findlast(JAN.=='/')
+    turn::Int8 = Int(JAN[slashIndex-1])%2
+    location = WhereEveryPiece(JAN, board, slashIndex, turn)
+    if (move[2] != ' ')
+        index = findfirst(JAN.==move[2])
+        if (move[2] == 'a')
+            if (Int(JAN[1] < move[1]))
+                board[Int(JAN[index])-96] = Int(JAN[index-2])-48
+            end
+        else
+            a = Int(JAN[index-2])
+            b=Int(move[1])
+            if (Int(JAN[index-2]) < Int(move[1]))
+                board[Int(JAN[index])-96] = JAN[index-2]
+            end
+        end
+    end
+    return SomeoneWon(board)
+end
+
+
+#a=MVector{23,Char}('1','2','5','a','3','4','b','2','c','d','1','4','e','f','g','3','h','0','5','i','1','/','0')
+#b=WhatInTheBox(a)
+#c=MVector{3,Char}('5','i','g')
+#print(ShouldNOTPlayedThat(a,b,c))
