@@ -27,6 +27,16 @@ using StaticArrays
 # same size, fixing the memory space will dramaticly improve the performace. To transform a MVector
 # into a String use prod(MVector)
 
+# This function takes a String and transform it into a MVector
+function transformString(s)
+    len = length(s)
+    newVec = MVector{len,Char}(undef)
+    for i in 1:len
+        newVec[i] = s[i]
+    end
+    return newVec
+end
+
 # This function take a JAN and return the state of the board of the JAN in alphabetical notation.
 function ShowPosition(JAN) # No need to optimise
     translation = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
@@ -296,9 +306,10 @@ function GenerateOrderMove(board::MVector, location, turn)
 end
 
 # This function takes a JAN and board and generate every move possible
-function GenerateEveryMove(JAN::MVector, board::MVector)
+function GenerateEveryMove(JAN::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
     turn::Int8 = Int(JAN[slashIndex-1])%2
+    board = WhatInTheBox(JAN)
     location::MVector = WhereEveryPiece(JAN, board, slashIndex, turn)
     return GenerateMove(board, location, turn)
 end
