@@ -1,3 +1,5 @@
+# Project description
+
 This project's goal was to implement an engine for a variant of the game TicTacToe.
 Each player has two small pieces, two mediums, and two larges. The goal remains the same: make three in a row.
 When it is their turn to play, a player can place a piece or move an available piece.
@@ -16,15 +18,11 @@ The second (optional) argument is to determine the depth. I don't recommend goin
 The third (optional) argument is a number between 1 and 3. This will determine the pieceset's use.
 Warning: Julia has to be able to be run on VSCode.
 
-Futur improvement for futur version:
-A transposition table.
-There is a lot of transposition and, therefore, a lot of wasted time.
+# Futur improvements for futur versions
+- [ ] **A transposition table:** there is a lot of transposition and, therefore, a lot of wasted time.
 
-A better eval function and a proper alpha-beta algorithm.
-The position should be a number between 0 and 1, where 0 O has won and 1 X has won. If no force win has been found, the ratio of (available move)/(oponent available move) would be, in my opinion, a good indicator of who is currently in a better position.
+- [ ] **A better eval function and a proper alpha-beta algorithm:** the position should be a number between 0 and 1, where 0 O has won and 1 X has won. If no force win has been found, the ratio of (available move)/(oponent available move) would be, in my opinion, a good indicator of who is currently in a better position.
 
-A more fluent way to analyze positions.
-It is possible if you know how JAN works, but it isn't a pleasant experience.
+- [ ] **A more fluent way to analyze positions:** It is possible if you know how JAN works, but it isn't a pleasant experience.
 
-A better interface.
-Interface isn't something I know a lot about, so it could be interesting to learn more about it. The library Mousetrap looks promising.
+- [ ] **A better user interface:** Interface isn't something I know a lot about, so it could be interesting to learn more about it. The library Mousetrap looks promising.
