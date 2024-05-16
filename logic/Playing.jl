@@ -5,6 +5,7 @@ include("Eval.jl")
 function playing(JAN, depth, pieceSet)
     gameInProgress = true
     board = WhatInTheBox(JAN)
+    listVal = []
     listPlayedMove = []
     while (gameInProgress)
         ShowPosition(JAN, pieceSet)
@@ -14,6 +15,7 @@ function playing(JAN, depth, pieceSet)
             println("Invalid move")
             userMove = transformString(readline())
         end
+        listVal = vcat(listVal, [' '])
         listPlayedMove = vcat(listPlayedMove, [userMove])
         if (ShouldNOTPlayedThat(JAN, board, userMove))
             println("Get good")
@@ -22,10 +24,11 @@ function playing(JAN, depth, pieceSet)
         board = ChangeBoard(JAN, board, userMove)
         JAN = MakeMove(JAN, userMove)
         if (SomeoneWon(board))
-            print("Congrats you have won")
+            println("Congrats you have won")
             break
         end
-        useless, compMove = FindBestMove(JAN, board, depth)
+        val, compMove = FindBestMove(JAN, board, depth)
+        listVal = vcat(listVal, [val])
         listPlayedMove = vcat(listPlayedMove, [compMove[1]])
         print("\033c")
         println(string("The computer played ",prod(compMove[1])))
@@ -36,8 +39,8 @@ function playing(JAN, depth, pieceSet)
             gameInProgress = false
         end
     end
-    for i in listPlayedMove
-        println(prod(i))
+    for i in eachindex(listVal)
+        println(string(listVal[i],"   ",prod(listPlayedMove[i])))
     end
 end
 

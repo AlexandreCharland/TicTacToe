@@ -338,7 +338,7 @@ function ShouldNOTPlayedThat(JAN, board, move) # No need to optimise
     if (move[2] != ' ')
         index = findfirst(JAN.==move[2])
         if (move[2] == 'a')
-            if (Int(JAN[1] < move[1]))
+            if (Int(JAN[1]) < Int(move[1]))
                 board[Int(JAN[index])-96] = Int(JAN[index-2])-48
             end
         else

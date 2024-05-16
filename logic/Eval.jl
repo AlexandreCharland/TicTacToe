@@ -68,12 +68,16 @@ function eval(JAN::MVector, board::MVector, depth::Int64)
     else
         val, list = X(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
     end
+    return val
+end
+
+function WhoIsWinning(JAN::MVector, board::MVector, depth::Int64)
+    val = eval(JAN, board, depth)
     if (val != 0)
         val = div(abs(val),val)
     end
     return val
 end
-
 
 # Determine the best move in the position
 function FindBestMove(JAN::MVector, board::MVector, depth::Int64)
