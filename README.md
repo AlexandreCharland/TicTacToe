@@ -26,3 +26,5 @@ Warning: Julia has to be able to be run on VSCode.
 - [ ] **A more fluent way to analyze positions:** It is possible if you know how JAN works, but it isn't a pleasant experience.
 
 - [ ] **A better user interface:** Interface isn't something I know a lot about, so it could be interesting to learn more about it. The library Mousetrap looks promising.
+
+- [ ] **A neural network-based evaluation:** It could be an interesting project to train a neural network-base to evaluate position.
