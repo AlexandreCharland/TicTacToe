@@ -27,4 +27,4 @@ Warning: Julia has to be able to be run on VSCode.
 
 - [ ] **A better user interface:** Interface isn't something I know a lot about, so it could be interesting to learn more about it. The library Mousetrap looks promising.
 
-- [ ] **A neural network-based evaluation:** It could be an interesting project to train a neural network-base to evaluate position.
+- [ ] **A neural network-based evaluation:** It could be an interesting project to train a neural network-based to evaluate position.
