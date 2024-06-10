@@ -62,7 +62,7 @@ end
 # Determine the evaluation of the position
 function eval(JAN::MVector, board::MVector, depth::Int64)
     turn = findlast(JAN.=='/')-1
-    playerTurn = Int(JAN[turn])%2
+    playerTurn = Int(JAN[turn]) & 1
     if (playerTurn == 1)
         val, list = O(JAN, board, MVector{3,Char}(' ',' ',' '), depth)
     else
@@ -82,7 +82,7 @@ end
 # Determine the best move in the position
 function FindBestMove(JAN::MVector, board::MVector, depth::Int64)
     turn = findlast(JAN.=='/')-1
-    playerTurn = Int(JAN[turn])%2
+    playerTurn = Int(JAN[turn]) & 1
     bestVal = nothing
     bestList = []
     if (playerTurn == 1)

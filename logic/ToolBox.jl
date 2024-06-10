@@ -38,12 +38,12 @@ function transformString(s) # No need to optimise
 end
 
 # This function take a JAN and return the state of the board of the JAN
-function ShowPosition(JAN)
+function ShowPosition(JAN::MVector)
     ShowPosition(JAN, 2)
 end
 
 # This function take a JAN and a choice for the pieces and and return the state of the board of the JAN
-function ShowPosition(JAN, choice) # No need to optimise
+function ShowPosition(JAN::MVector, choice) # No need to optimise
     pieceSet1 = Dict("" => " ", '0' => "S", '1' => "s", '2' => "M", '3' => "m", '4' => "L", '5' => "l")
     pieceSet2 = Dict("" => " ", '0' => "x", '1' => "o", '2' => "+", '3' => "0", '4' => "X", '5' => "O")
     pieceSet3 = Dict("" => " ", '0' => "0", '1' => "1", '2' => "2", '3' => "3", '4' => "4", '5' => "5")
@@ -169,7 +169,7 @@ function SomethingHasChange(board::MVector, square::Char)
     val::Int8 = Int(square)-96
     if (val == -64)
         return SomeoneWon(board)
-    elseif (val%2 == 0)
+    elseif (val & 1 == 0)
         return (VerifyWin(board[7-(val%4)*2], board[val], board[5-4*(-1)^(val÷5)]) ||
                 VerifyWin(board[val], board[5], board[10-val]))
     elseif (val == 5)
@@ -191,7 +191,7 @@ end
 function WhoIsOnTheBench(JAN::MVector, slashIndex::Int8, turn::Int8, location::MVector)
     for i in (slashIndex+1):23
         piece::Int8 = Int(JAN[i])
-        if (piece % 2 == turn)
+        if (piece & 1 == turn)
             piece = piece - turn - 47
             if (location[piece] == 'x')
                 location[piece] = ' '
@@ -209,7 +209,7 @@ function WhereEveryPiece(JAN::MVector, board::MVector, slashIndex::Int8, turn::I
     location::MVector = MVector{6,Char}('x','x','x','x','x','x')
     for i in 1:9
         piece::Int8 = Int(board[i])
-        if (piece != 32 && piece % 2 == turn)
+        if (piece != 32 && piece & 1 == turn)
             piece = piece - turn - 47 # Reusing variable, a better name would be index
             if (location[piece] == 'x')
                 location[piece] = Char(96+i)
@@ -235,7 +235,7 @@ function WherePlayablePiece(JAN::MVector, board::MVector, slashIndex, turn)
         if (JAN[2] == 'a')
             letter = letter + 1
             piece = Int(JAN[1])
-            if (piece % 2 == turn)
+            if (piece & 1 == turn)
                 location[piece - turn - 47] = 'a'
             end
         end
@@ -243,7 +243,7 @@ function WherePlayablePiece(JAN::MVector, board::MVector, slashIndex, turn)
     for i in 3:(slashIndex - 2)
         if (JAN[i] == Char(letter))
             piece = Int(JAN[i-1])
-            if (piece % 2 == turn && JAN[i-1] < Char(letter-1))
+            if (piece & 1 == turn && JAN[i-1] < Char(letter-1))
                 info = Char(letter)
                 if (JAN[i-2] < JAN[i-1])
                     board[letter-96] = JAN[i-2]
@@ -278,7 +278,7 @@ function GenerateMove(board::MVector, location, turn)
             if (location[j] != 'x')
                 move = MVector{3,Char}(Char(((j-1)>>1<<1)+turn+48),location[j],Char(i+96))
                 push!(moveList, move)
-                j = location[j] == ' ' ? j + (j%2) + 1 : j+1
+                j = location[j] == ' ' ? j + (j & 1) + 1 : j+1
             else
                 j = j+1
             end
@@ -303,7 +303,7 @@ function GenerateOrderMove(board::MVector, location, turn)
                 move = MVector{3,Char}(Char(((j-1)>>1<<1)+turn+48),location[j],Char(i+96))
                 if (location[j] == ' ')
                     push!(moveListDeck, move)
-                    j = j + (j%2)
+                    j = j + (j & 1)
                 else
                     push!(moveListBoard, move)
                 end
@@ -317,7 +317,7 @@ end
 # This function takes a JAN and board and generate every move possible
 function GenerateEveryMove(JAN::MVector, board::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
-    turn::Int8 = Int(JAN[slashIndex-1])%2
+    turn::Int8 = Int(JAN[slashIndex-1]) & 1
     location::MVector = WhereEveryPiece(JAN, board, slashIndex, turn)
     return GenerateMove(board, location, turn)
 end
@@ -325,7 +325,7 @@ end
 # This function is very similar to GenerateMove, but it will not return move that moves a pin piece.
 function GenerateBetterMove(JAN::MVector, board::MVector)
     slashIndex::Int8 = findlast(JAN.=='/')
-    turn::Int8 = Int(JAN[slashIndex-1])%2
+    turn::Int8 = Int(JAN[slashIndex-1]) & 1
     location::MVector = WherePlayablePiece(JAN, board, slashIndex, turn)
     return GenerateOrderMove(board, location, turn)
 end
@@ -333,7 +333,7 @@ end
 # This function check if a move insta lose
 function ShouldNOTPlayedThat(JAN, board, move) # No need to optimise
     slashIndex::Int8 = findlast(JAN.=='/')
-    turn::Int8 = Int(JAN[slashIndex-1])%2
+    turn::Int8 = Int(JAN[slashIndex-1]) & 1
     location = WhereEveryPiece(JAN, board, slashIndex, turn)
     if (move[2] != ' ')
         index = findfirst(JAN.==move[2])
