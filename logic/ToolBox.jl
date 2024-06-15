@@ -125,8 +125,7 @@ function ChangeBoard(JAN::MVector, board::MVector, move::MVector)
     return newBoard
 end
 
-# This function take 3 non empty square and return True if every element in those square are of the same
-# parity
+# This function take 3 square and return True if every element in those square are of the same parity
 function VerifyWin(a::Char, b::Char, c::Char)
     conversion = Dict('0' => 0, '1' => 2, '2' => 0, '3' => 2, '4' => 0, '5' => 2, ' ' => 1)
     return (conversion[a]+conversion[b]+conversion[c])%6 == 0
@@ -167,9 +166,9 @@ end
 # modifie the state of the game
 function SomethingHasChange(board::MVector, square::Char)
     val::Int8 = Int(square)-96
-    if (val == -64)
-        return SomeoneWon(board)
-    elseif (val & 1 == 0)
+    #if (val == -64)
+    #    return SomeoneWon(board)
+    if (val & 1 == 0)
         return (VerifyWin(board[7-(val%4)*2], board[val], board[5-4*(-1)^(val÷5)]) ||
                 VerifyWin(board[val], board[5], board[10-val]))
     elseif (val == 5)
