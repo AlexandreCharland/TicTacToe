@@ -295,7 +295,7 @@ function GenerateOrderMove(board::MVector, location, turn)
         if (val == 16) # Empty square
             j::Int8 = 1
         else
-            j = 2*val-45
+            j = (val<<1)-45
         end
         while (j <= 6)
             if (location[j] != 'x')
