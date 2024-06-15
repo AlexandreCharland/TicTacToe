@@ -33,9 +33,10 @@ function WhoIsOnTop(val::Int8)
     return (val & 42)>(val & 21)
 end
 
-# This function take 3 square and return True if every element in those square are of the same parity
+# This function take 3 square different from 0 and return True if every element in those square are of the same
+# parity
 function VerifyWin(a::Int8, b::Int8, c::Int8)
-    return ((a | b | c) == 0) && ((WhoIsOnTop(a)+WhoIsOnTop(b)+WhoIsOnTop(c))%3 == 0)
+    return (a != 0) && (b != 0) && (c != 0) && ((WhoIsOnTop(a)+WhoIsOnTop(b)+WhoIsOnTop(c))%3 == 0)
 end
 
 # This fonction takes a board and return true if a player has won and false if no player has won
@@ -54,8 +55,8 @@ end
 # modifie the state of the game
 function SomethingHasChange(game::MMatrix, square::Int8)
     if (square & 1 == 0)
-        return (VerifyWin(game[7-(val%4)*2], game[val], game[5-4*(-1)^(val÷5)]) ||
-                VerifyWin(game[val], game[5], game[10-val]))
+        return (VerifyWin(game[7-(square%4)*2], game[square], game[5-4*(-1)^(square÷5)]) ||
+                VerifyWin(game[square], game[5], game[10-square]))
     elseif (square == 5)
         return (VerifyWin(game[1], game[5], game[9]) ||
                 VerifyWin(game[2], game[5], game[8]) ||
@@ -63,9 +64,9 @@ function SomethingHasChange(game::MMatrix, square::Int8)
                 VerifyWin(game[4], game[5], game[6]))
     else
         var::Int8 = (-1)^(square÷5)
-        return (VerifyWin(game[val], game[5-3*var], game[val+4*(val%3)-2]) ||
-                VerifyWin(game[val], game[(val%6)+3], game[val+6*var]) ||
-                VerifyWin(game[val], game[5], game[10-val]))
+        return (VerifyWin(game[square], game[5-3*var], game[square+4*(square%3)-2]) ||
+                VerifyWin(game[square], game[(square%6)+3], game[square+6*var]) ||
+                VerifyWin(game[square], game[5], game[10-square]))
     end
 end
 
@@ -76,7 +77,7 @@ function MakeMove(game::MMatrix, move::MVector)
     piece::Int8 = 1<<(move[1]<<1)
     newGame[move[3]] += piece<<newGame[12]
     if (move[2] == 0)
-        newGame[10+turn] -= piece
+        newGame[10+newGame[12]] -= piece
     else
         newGame[move[2]] -= piece<<newGame[12]
     end
@@ -107,7 +108,7 @@ end
 function WhereEveryPiece(game::MMatrix)
     location = MVector{6,Int8}(-1,-1,-1,-1,-1,-1)
     for i in 1:9
-        if (game[i] == 0)
+        if (game[i] != 0)
             if (WhoIsOnTop(game[i]) == game[12])
                 if (game[i] >= 16)
                     location = FoundOne(location, 2, i)
@@ -125,17 +126,17 @@ end
 function WherePlayablePiece(game::MMatrix)
     location = MVector{6,Int8}(-1,-1,-1,-1,-1,-1)
     for i in 1:10
-        if (game[i] == 0)
+        if (game[i] != 0)
             if (WhoIsOnTop(game[i]) == game[12])
                 if (game[i] >= 16)
                     game[i] -= 16<<game[12]
-                    if (!SomethingHasChange(game, i))
+                    if (!SomethingHasChange(game, Int8(i)))
                         location = FoundOne(location, 2, i)
                     end
                     game[i] += 16<<game[12]
                 elseif (game[i] >= 4)
                     game[i] -= 4<<game[12]
-                    if (!SomethingHasChange(game, i))
+                    if (!SomethingHasChange(game, Int8(i)))
                         location = FoundOne(location, 1, i)
                     end
                     game[i] += 4<<game[12]
@@ -164,7 +165,7 @@ function GenerateMove(game::MMatrix, location::MVector)
             if (location[j] == -1)
                 j+=1+(j&1)
             else
-                push!(movelist, MVector{3,Int8}((j-1)>>1,location[j],i))
+                push!(moveList, MVector{3,Int8}((j-1)>>1,location[j],i))
                 j = location[j] == 0 ? j + (j & 1) + 1 : j+1
             end
         end
@@ -192,7 +193,7 @@ function GenerateOrderMove(game::MMatrix, location::MVector)
                 push!(moveListDeck, MVector{3,Int8}((j-1)>>1,0,i))
                 j+=1+(j&1)
             else
-                push!(movelistBoard, MVector{3,Int8}((j-1)>>1,location[j],i))
+                push!(moveListBoard, MVector{3,Int8}((j-1)>>1,location[j],i))
                 j+=1
             end
         end
