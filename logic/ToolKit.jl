@@ -125,7 +125,7 @@ end
 
 function WherePlayablePiece(game::MMatrix)
     location = MVector{6,Int8}(-1,-1,-1,-1,-1,-1)
-    for i in 1:10
+    for i in 1:9
         if (game[i] != 0)
             if (WhoIsOnTop(game[i]) == game[12])
                 if (game[i] >= 16)
