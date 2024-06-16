@@ -166,9 +166,9 @@ end
 # modifie the state of the game
 function SomethingHasChange(board::MVector, square::Char)
     val::Int8 = Int(square)-96
-    #if (val == -64)
-    #    return SomeoneWon(board)
-    if (val & 1 == 0)
+    if (val == -64)
+        return SomeoneWon(board)
+    elseif (val & 1 == 0)
         return (VerifyWin(board[7-(val%4)*2], board[val], board[5-4*(-1)^(val÷5)]) ||
                 VerifyWin(board[val], board[5], board[10-val]))
     elseif (val == 5)

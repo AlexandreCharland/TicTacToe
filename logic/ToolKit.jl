@@ -85,6 +85,7 @@ function MakeMove(game::MMatrix, move::MVector)
     return newGame
 end
 
+# This function modifie location
 function FoundOne(location, piece, from)
     if (location[(piece<<1)+1] == -1)
         location[(piece<<1)+1] = from
@@ -94,6 +95,7 @@ function FoundOne(location, piece, from)
     return location
 end
 
+# This function figures out what piece are not curently in play
 function WhoIsOnTheBench(game::MMatrix, location::MVector)
     val::Int8 = game[10+game[12]]
     for i in 0:2
@@ -105,6 +107,7 @@ function WhoIsOnTheBench(game::MMatrix, location::MVector)
     return location
 end
 
+# This function figure where are the pieces
 function WhereEveryPiece(game::MMatrix)
     location = MVector{6,Int8}(-1,-1,-1,-1,-1,-1)
     for i in 1:9
@@ -123,6 +126,7 @@ function WhereEveryPiece(game::MMatrix)
     return WhoIsOnTheBench(game, location)
 end
 
+# This function return all of the piece that aren't pin to something
 function WherePlayablePiece(game::MMatrix)
     location = MVector{6,Int8}(-1,-1,-1,-1,-1,-1)
     for i in 1:9
@@ -149,6 +153,7 @@ function WherePlayablePiece(game::MMatrix)
     return WhoIsOnTheBench(game, location)
 end
 
+# This function generate a list of all of the possible move given a location
 function GenerateMove(game::MMatrix, location::MVector)
     moveList = []
     for i in 1:9
@@ -173,6 +178,8 @@ function GenerateMove(game::MMatrix, location::MVector)
     return moveList
 end
 
+# This function generate a list of all of the possible move given a location where the move that adds a piece to
+# the board are place on top of the list.
 function GenerateOrderMove(game::MMatrix, location::MVector)
     moveListBoard = []
     moveListDeck = []
@@ -201,11 +208,13 @@ function GenerateOrderMove(game::MMatrix, location::MVector)
     return append!(moveListDeck, moveListBoard)
 end
 
+# This function generate a list of every possible move in a position
 function GenerateEveryMove(game::MMatrix)
     location::MVector = WhereEveryPiece(game)
     return GenerateMove(game, location)
 end
 
+# This function generate a list of smart move in the position
 function GenerateBetterMove(game::MMatrix)
     location::MVector = WherePlayablePiece(game)
     return GenerateOrderMove(game, location)

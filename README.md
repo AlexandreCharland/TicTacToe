@@ -12,11 +12,19 @@ The added rules make the game a lot more difficult and interesting.
 
 The original goal of this project was to implement a way to implement a program that is able to determine, given a position, who is winning and what is the best move in that position.
 
-The current version has accomplished this goal, although it is not user-friendly. One can play against the engine by running the Playing.jl in vscode and write the command play($1), play($1,$2), or play($1,$2,$3) in the REPL.
+The current version has accomplished this goal, although it is not user-friendly. 
+
+# How to operate
+One can play against the engine by running the Playing.jl in vscode and write the command play($1), play($1,$2), or play($1,$2,$3) in the REPL.
 The first arguments given in play are 0 for playing first (X) and 1 for playing second (O).
 The second (optional) argument is to determine the depth. I don't recommend going further than 5.
-The third (optional) argument is a number between 1 and 3. This will determine the pieceset's use.
-Warning: Julia has to be able to be run on VSCode.
+The third (optional) argument is a number between 1 and 3.
+Warning: I have no idea what the steps are to properly make this code run on another computer. The information above is simply there to instruct you on how to use the code once it is functional.
+
+# History
+**Version1** Used a fix string to encode the information about a position. It can detect a pin move. Use brute force to calculate his way through a position.
+
+**Version2 Beta** Used a matrix of intergers to encode the information. This makes it more difficult to find what is in each square, but much easier to find the square. Also, using intergers allows the use of binary operations. The encoding of a position takes a lot less memory space now, and the binary operation makes it a lot quicker. This version hasn't been fully debugged; more basic functions need to be added, and more features are needed.
 
 # Futur improvements for futur versions
 - [ ] **A transposition table:** there is a lot of transposition and, therefore, a lot of wasted time.
