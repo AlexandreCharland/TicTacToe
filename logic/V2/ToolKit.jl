@@ -18,14 +18,46 @@ using StaticArrays
 
 # This function take a interger value and return the encoded string.
 function Decode(val::Int8)
-    code::String = ""
-    for i in 0:5
+    code::Int8 = 0
+    for i in 1:6
         if (val & 1 == 1)
-            code = string(code, i)
+            code = i
         end
         val = val>>1
     end
     return code
+end
+
+function ShowPosition(game::MMatrix)
+    pieceSet = ['x','o','+','0','X','O']
+    line = " "
+    stuff = " "
+    for i in 1:9
+        code = Decode(game[i])
+        if (code != 0)
+            stuff = pieceSet[code]
+        end
+        line = string(line, stuff)
+        if (i%3 == 0)
+            println(line)
+            if (i != 9)
+                println("---+---+---")
+            end
+            line = " "
+        else
+            line = string(line, " | ")
+        end
+        stuff = " "
+    end
+end
+
+function transformInt(s::String)
+    len = length(s)
+    newVec = MVector{len,Int8}(undef)
+    for i in 1:len
+        newVec[i] = parse(Int8,s[i])
+    end
+    return newVec
 end
 
 # This function take a positive number and return true if O is on top and false if X is on top

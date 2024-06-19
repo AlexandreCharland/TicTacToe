@@ -1,6 +1,11 @@
 using StaticArrays
 include("ToolKit.jl")
 
+function EvalPosition(game::MMatrix):
+    #What make a position good?
+    #What make a position A better than position B?
+end
+
 function X(game::MMatrix, prevMove::MVector, depth::Int8)
     if (SomethingHasChange(game, prevMove[3]))
         return -1, [prevMove]
@@ -67,4 +72,29 @@ function eval(game::MMatrix, depth::Int8)
         val, list = O(game, MVector{3,Int8}(0,0,1), depth)
     end
     return val, list[2:end]
+end
+
+function FindBestMove(game::MMatrix, depth::Int8)
+    bestVal = nothing
+    bestList = []
+    if (game[12] == 0)
+        val, list = X(game, MVector{3,Int8}(0,0,1), depth)
+        bestList = list
+        bestVal = val
+        while (abs(val) > 2)
+            bestList = list
+            bestVal = val
+            val, list = X(game, MVector{3,Int8}(0,0,1), Int8(abs(val)-1))
+        end
+    else
+        val, list = O(game, MVector{3,Int8}(0,0,1), depth)
+        bestList = list
+        bestVal = val
+        while (abs(val) > 2)
+            bestList = list
+            bestVal = val
+            val, list = O(game, MVector{3,Int8}(0,0,1), Int8(abs(val)-1))
+        end
+    end
+    return bestVal, bestList[2:end]
 end
