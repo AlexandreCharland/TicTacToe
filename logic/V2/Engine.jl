@@ -1,7 +1,8 @@
 using StaticArrays
 include("ToolKit.jl")
+include("AVLTree.jl")
 
-function EvalPosition(game::MMatrix):
+function EvalPosition(game::MMatrix)
     #What make a position good?
     #What make a position A better than position B?
 end
@@ -98,3 +99,5 @@ function FindBestMove(game::MMatrix, depth::Int8)
     end
     return bestVal, bestList[2:end]
 end
+
+#print(CreateAVLTree())
